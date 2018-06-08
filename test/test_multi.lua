@@ -107,6 +107,17 @@ while true do
   end
 end
 
+while true do
+  local info, n = multi:info_read()
+  print(info, n)
+  if info == nil then
+    break
+  else
+    assert(info.msg == curl.CURLMSG_DONE)
+    assert(info.result == curl.CURLE_OK)
+  end
+end
+
 assert(multi:remove_handle(easy1))
 assert(easy1:cleanup())
 assert(multi:remove_handle(easy2))

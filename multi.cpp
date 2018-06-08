@@ -50,6 +50,15 @@ namespace dromozoa {
       }
     }
 
+    void impl_remove_handle(lua_State* L) {
+      CURLMcode result = curl_multi_remove_handle(check_multi(L, 1), check_easy(L, 2));
+      if (result == CURLM_OK) {
+        luaX_push_success(L);
+      } else {
+        push_error(L, result);
+      }
+    }
+
     void impl_socket_action(lua_State* L) {
       curl_socket_t sockfd = luaX_check_integer<curl_socket_t>(L, 2);
       int ev_bitmask = luaX_opt_integer<int>(L, 3, 0);
@@ -62,12 +71,19 @@ namespace dromozoa {
       }
     }
 
-    void impl_remove_handle(lua_State* L) {
-      CURLMcode result = curl_multi_remove_handle(check_multi(L, 1), check_easy(L, 2));
-      if (result == CURLM_OK) {
-        luaX_push_success(L);
+    void impl_info_read(lua_State* L) {
+      int msgs_in_queue = 0;
+      if (CURLMsg* msg = curl_multi_info_read(check_multi(L, 1), &msgs_in_queue)) {
+        lua_newtable(L);
+        luaX_set_field<lua_Integer>(L, -1, "msg", msg->msg);
+        new_easy_ref(L, msg->easy_handle);
+        luaX_set_field(L, -2, "easy_handle");
+        if (msg->msg == CURLMSG_DONE) {
+          luaX_set_field<lua_Integer>(L, -1, "result", msg->data.result);
+        }
+        luaX_push(L, msgs_in_queue);
       } else {
-        push_error(L, result);
+        luaX_push(L, luaX_nil);
       }
     }
   }
@@ -106,6 +122,7 @@ namespace dromozoa {
       luaX_set_field(L, -1, "add_handle", impl_add_handle);
       luaX_set_field(L, -1, "remove_handle", impl_remove_handle);
       luaX_set_field(L, -1, "socket_action", impl_socket_action);
+      luaX_set_field(L, -1, "info_read", impl_info_read);
 
       initialize_multi_setopt(L);
     }
