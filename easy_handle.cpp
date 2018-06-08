@@ -42,11 +42,11 @@ namespace dromozoa {
     return handle_;
   }
 
-  luaX_reference* easy_handle::new_reference(CURLoption option, lua_State* L) {
-    luaX_reference* reference = 0;
+  luaX_reference<>* easy_handle::new_reference(CURLoption option, lua_State* L, int index) {
+    luaX_reference<>* reference = 0;
     try {
-      reference = new luaX_reference(L);
-      std::map<CURLoption, luaX_reference*>::iterator i = references_.find(option);
+      reference = new luaX_reference<>(L, index);
+      std::map<CURLoption, luaX_binder*>::iterator i = references_.find(option);
       if (i == references_.end()) {
         references_.insert(std::make_pair(option, reference));
       } else {
@@ -72,8 +72,8 @@ namespace dromozoa {
 
   void easy_handle::clear() {
     {
-      std::map<CURLoption, luaX_reference*>::iterator i = references_.begin();
-      std::map<CURLoption, luaX_reference*>::iterator end = references_.begin();
+      std::map<CURLoption, luaX_binder*>::iterator i = references_.begin();
+      std::map<CURLoption, luaX_binder*>::iterator end = references_.begin();
       for (; i != end; ++i) {
         delete i->second;
       }

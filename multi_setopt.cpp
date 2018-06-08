@@ -21,7 +21,7 @@
 namespace dromozoa {
   namespace {
     int socket_callback(CURL* easy, curl_socket_t s, int what, void* userdata, void*) {
-      luaX_reference* ref = static_cast<luaX_reference*>(userdata);
+      luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
       int top = lua_gettop(L);
       ref->get_field();
@@ -42,7 +42,7 @@ namespace dromozoa {
     }
 
     int timer_callback(CURLM* multi, long timeout_ms, void* userdata) {
-      luaX_reference* ref = static_cast<luaX_reference*>(userdata);
+      luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
       int top = lua_gettop(L);
       ref->get_field();
@@ -76,8 +76,7 @@ namespace dromozoa {
           result = curl_multi_setopt(self->get(), option_data, 0);
         }
       } else {
-        lua_pushvalue(L, 3);
-        luaX_reference* ref = self->new_reference(option, L);
+        luaX_reference<>* ref = self->new_reference(option, L, 3);
         result = curl_multi_setopt(self->get(), option, &callback);
         if (result == CURLM_OK) {
           result = curl_multi_setopt(self->get(), option_data, ref);

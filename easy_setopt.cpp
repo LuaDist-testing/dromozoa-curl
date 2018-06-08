@@ -25,7 +25,7 @@ namespace dromozoa {
   namespace {
     size_t read_callback(char* buffer, size_t size, size_t nmemb, void* userdata) {
       size_t n = size * nmemb;
-      luaX_reference* ref = static_cast<luaX_reference*>(userdata);
+      luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
       int top = lua_gettop(L);
       ref->get_field();
@@ -53,7 +53,7 @@ namespace dromozoa {
 
     size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdata) {
       size_t n = size * nmemb;
-      luaX_reference* ref = static_cast<luaX_reference*>(userdata);
+      luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
       int top = lua_gettop(L);
       ref->get_field();
@@ -89,8 +89,7 @@ namespace dromozoa {
     CURLcode setopt_httppost(lua_State* L, CURLoption option) {
       luaL_checkany(L, 3);
       easy_handle* self = check_easy_handle(L, 1);
-      lua_pushvalue(L, 3);
-      self->new_reference(option, L);
+      self->new_reference(option, L, 3);
       httppost_handle* form = check_httppost_handle(L, 3);
       CURLcode result = curl_easy_setopt(self->get(), option, form->get());
       if (result == CURLE_OK && form->have_stream()) {
@@ -105,11 +104,10 @@ namespace dromozoa {
       if (lua_isnoneornil(L, 3)) {
         result = curl_easy_setopt(self->get(), option, 0);
       } else {
+        luaL_checktype(L, 3, LUA_TTABLE);
         string_list list(L, 3);
-        if (list.get()) {
-          self->save_slist(option, list.get());
-          result = curl_easy_setopt(self->get(), option, list.release());
-        }
+        self->save_slist(option, list.get());
+        result = curl_easy_setopt(self->get(), option, list.release());
       }
       return result;
     }
@@ -124,8 +122,7 @@ namespace dromozoa {
           result = curl_easy_setopt(self->get(), option_data, default_data);
         }
       } else {
-        lua_pushvalue(L, 3);
-        luaX_reference* ref = self->new_reference(option, L);
+        luaX_reference<>* ref = self->new_reference(option, L, 3);
         result = curl_easy_setopt(self->get(), option, callback);
         if (result == CURLE_OK) {
           result = curl_easy_setopt(self->get(), option_data, ref);

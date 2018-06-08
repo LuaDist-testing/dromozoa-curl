@@ -31,7 +31,7 @@ namespace dromozoa {
       forms.push_back(f);
     }
 
-    void save_forms(std::vector<struct curl_forms>& forms, CURLformoption option, luaX_reference* value) {
+    void save_forms(std::vector<struct curl_forms>& forms, CURLformoption option, luaX_reference<>* value) {
       struct curl_forms f = { option, reinterpret_cast<char*>(value) };
       forms.push_back(f);
     }
@@ -69,13 +69,13 @@ namespace dromozoa {
 
     CURLFORMcode save_forms_function(std::vector<struct curl_forms>& forms, lua_State* L, int arg, CURLformoption option) {
       httppost_handle* self = check_httppost_handle(L, 1);
-      lua_pushvalue(L, arg);
-      luaX_reference* ref = self->new_reference(L);
+      luaX_reference<>* ref = self->new_reference(L, arg);
       save_forms(forms, option, ref);
       return CURL_FORMADD_OK;
     }
 
     CURLFORMcode save_forms_slist(std::vector<struct curl_forms>& forms, lua_State* L, int arg, CURLformoption option) {
+      luaL_checktype(L, arg, LUA_TTABLE);
       string_list list(L, arg);
       if (list.get()) {
         httppost_handle* self = check_httppost_handle(L, 1);
@@ -98,8 +98,8 @@ namespace dromozoa {
 
   void httppost_handle::free() {
     {
-      std::set<luaX_reference*>::iterator i = references_.begin();
-      std::set<luaX_reference*>::iterator end = references_.end();
+      std::set<luaX_binder*>::iterator i = references_.begin();
+      std::set<luaX_binder*>::iterator end = references_.end();
       for (; i != end; ++i) {
         delete *i;
       }
@@ -181,10 +181,10 @@ namespace dromozoa {
     return first_;
   }
 
-  luaX_reference* httppost_handle::new_reference(lua_State* L) {
-    luaX_reference* reference = 0;
+  luaX_reference<>* httppost_handle::new_reference(lua_State* L, int index) {
+    luaX_reference<>* reference = 0;
     try {
-      reference = new luaX_reference(L);
+      reference = new luaX_reference<>(L, index);
       references_.insert(reference);
       return reference;
     } catch (...) {
