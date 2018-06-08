@@ -23,46 +23,38 @@ namespace dromozoa {
     int socket_callback(CURL* easy, curl_socket_t s, int what, void* userdata, void*) {
       luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
-      int result = 0;
-      int top = lua_gettop(L);
+      luaX_top_saver save_top(L);
       {
         ref->get_field(L);
         new_easy_ref(L, easy);
         luaX_push(L, s);
         luaX_push(L, what);
-        int r = lua_pcall(L, 3, 1, 0);
-        if (r == 0) {
-          if (luaX_is_integer(L, -1)) {
-            result = lua_tointeger(L, -1);
-          }
+        if (lua_pcall(L, 3, 0, 0) == 0) {
+          return 0;
         } else {
           DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
         }
       }
-      lua_settop(L, top);
-      return result;
+      // libcurl ignore callback result
+      return -1;
     }
 
     int timer_callback(CURLM* multi, long timeout_ms, void* userdata) {
       luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
-      int result = 0;
-      int top = lua_gettop(L);
+      luaX_top_saver save_top(L);
       {
         ref->get_field(L);
         new_multi_ref(L, multi);
         luaX_push(L, timeout_ms);
-        int r = lua_pcall(L, 2, 1, 0);
-        if (r == 0) {
-          if (luaX_is_integer(L, -1)) {
-            result = lua_tointeger(L, -1);
-          }
+        if (lua_pcall(L, 2, 0, 0) == 0) {
+          return 0;
         } else {
           DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
         }
       }
-      lua_settop(L, top);
-      return result;
+      // libcurl ignore callback result
+      return -1;
     }
   }
 

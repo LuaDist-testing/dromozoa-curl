@@ -56,9 +56,8 @@ namespace dromozoa {
     }
 
     void impl_escape(lua_State* L) {
-      size_t length = 0;
-      const char* url = luaL_checklstring(L, 2, &length);
-      if (char* result = curl_easy_escape(check_easy(L, 1), url, length)) {
+      luaX_string_reference url = luaX_check_string(L, 2);
+      if (char* result = curl_easy_escape(check_easy(L, 1), url.data(), url.size())) {
         luaX_push(L, result);
         curl_free(result);
       } else {
@@ -67,11 +66,10 @@ namespace dromozoa {
     }
 
     void impl_unescape(lua_State* L) {
-      size_t in_length = 0;
-      const char* url = luaL_checklstring(L, 2, &in_length);
-      int out_length = 0;
-      if (char* result = curl_easy_unescape(check_easy(L, 1), url, in_length, &out_length)) {
-        lua_pushlstring(L, result, out_length);
+      luaX_string_reference url = luaX_check_string(L, 2);
+      int length = 0;
+      if (char* result = curl_easy_unescape(check_easy(L, 1), url.data(), url.size(), &length)) {
+        luaX_push(L, luaX_string_reference(result, length));
         curl_free(result);
       } else {
         push_error(L, CURLE_CONV_FAILED);

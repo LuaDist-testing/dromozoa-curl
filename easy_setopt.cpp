@@ -28,54 +28,51 @@ namespace dromozoa {
       size_t n = size * nmemb;
       luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
-      size_t result = CURL_READFUNC_ABORT;
-      int top = lua_gettop(L);
+      luaX_top_saver save_top(L);
       {
         ref->get_field(L);
         luaX_push(L, n);
-        int r = lua_pcall(L, 1, 1, 0);
-        if (r == 0) {
+        if (lua_pcall(L, 1, 1, 0) == 0) {
           if (luaX_is_integer(L, -1)) {
-            result = lua_tointeger(L, -1);
-          } else if (const char* ptr = lua_tolstring(L, -1, &result)) {
-            if (result <= n) {
-              memcpy(buffer, ptr, result);
-            } else {
-              result = CURL_READFUNC_ABORT;
+            // CURL_READFUNC_ABORT, CURL_READFUNC_PAUSE or 0
+            return lua_tointeger(L, -1);
+          } else if (luaX_string_reference source = luaX_to_string(L, -1)) {
+            if (source.size() <= n) {
+              memcpy(buffer, source.data(), source.size());
+              return source.size();
             }
           } else {
-            result = 0;
+            // stop the current transfer
+            return 0;
           }
         } else {
           DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
         }
       }
-      lua_settop(L, top);
-      return result;
+      return CURL_READFUNC_ABORT;
     }
 
     size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdata) {
       size_t n = size * nmemb;
       luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
-      size_t result = 0;
-      int top = lua_gettop(L);
+      luaX_top_saver save_top(L);
       {
         ref->get_field(L);
-        lua_pushlstring(L, ptr, n);
-        int r = lua_pcall(L, 1, 1, 0);
-        if (r == 0) {
+        luaX_push(L, luaX_string_reference(ptr, n));
+        if (lua_pcall(L, 1, 1, 0) == 0) {
           if (luaX_is_integer(L, -1)) {
-            result = lua_tointeger(L, -1);
+            // the number of bytes written or CURL_WRITEFUNC_PAUSE
+            return lua_tointeger(L, -1);
           } else {
-            result = n;
+            // assume that all bytes were written
+            return n;
           }
         } else {
           DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
         }
-        lua_settop(L, top);
       }
-      return result;
+      return 0;
     }
   }
 
@@ -91,12 +88,16 @@ namespace dromozoa {
 
     static CURLcode setopt_string(easy_handle* self, lua_State* L, CURLoption option, CURLoption option_length) {
       if (lua_isnoneornil(L, 3)) {
-        return curl_easy_setopt(self->get(), option, 0);
-      } else {
-        size_t length = 0;
-        CURLcode result = curl_easy_setopt(self->get(), option, luaL_checklstring(L, 3, &length));
+        CURLcode result = curl_easy_setopt(self->get(), option, 0);
         if (result == CURLE_OK) {
-          result = curl_easy_setopt(self->get(), option_length, static_cast<curl_off_t>(length));
+          result = curl_easy_setopt(self->get(), option_length, 0);
+        }
+        return result;
+      } else {
+        luaX_string_reference source = luaX_check_string(L, 3);
+        CURLcode result = curl_easy_setopt(self->get(), option, source.data());
+        if (result == CURLE_OK) {
+          result = curl_easy_setopt(self->get(), option_length, static_cast<curl_off_t>(source.size()));
         }
         return result;
       }
@@ -106,16 +107,18 @@ namespace dromozoa {
       if (lua_isnoneornil(L, 3)) {
         CURLcode result = curl_easy_setopt(self->get(), option, 0);
         if (result == CURLE_OK) {
-          self->delete_reference(option);
+          result = curl_easy_setopt(self->get(), option_length, 0);
+          if (result == CURLE_OK) {
+            self->delete_reference(option);
+          }
         }
         return result;
       } else {
-        size_t length = 0;
-        const char* ptr = luaL_checklstring(L, 3, &length);
+        luaX_string_reference source = luaX_check_string(L, 3);
         self->new_reference(option, L, 3);
-        CURLcode result = curl_easy_setopt(self->get(), option, ptr);
+        CURLcode result = curl_easy_setopt(self->get(), option, source.data());
         if (result == CURLE_OK) {
-          result = curl_easy_setopt(self->get(), option_length, static_cast<curl_off_t>(length));
+          result = curl_easy_setopt(self->get(), option_length, static_cast<curl_off_t>(source.size()));
         }
         return result;
       }

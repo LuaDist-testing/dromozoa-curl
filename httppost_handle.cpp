@@ -28,7 +28,8 @@ namespace dromozoa {
       if (lua_isnoneornil(L, arg)) {
         return CURL_FORMADD_NULL;
       } else {
-        add(forms, option, luaL_checkstring(L, arg));
+        luaX_string_reference source = luaX_check_string(L, arg);
+        add(forms, option, source.data());
         return CURL_FORMADD_OK;
       }
     }
@@ -37,9 +38,9 @@ namespace dromozoa {
       if (lua_isnoneornil(L, arg)) {
         return CURL_FORMADD_NULL;
       } else {
-        size_t length = 0;
-        add(forms, option, luaL_checklstring(L, arg, &length));
-        add(forms, option_length, length);
+        luaX_string_reference source = luaX_check_string(L, arg);
+        add(forms, option, source.data());
+        add(forms, option_length, source.size());
         return CURL_FORMADD_OK;
       }
     }
@@ -48,9 +49,9 @@ namespace dromozoa {
       if (lua_isnoneornil(L, arg)) {
         return CURL_FORMADD_NULL;
       } else {
-        const char* ptr = luaL_checkstring(L, arg);
+        luaX_string_reference source = luaX_check_string(L, arg);
         self->new_reference(L, arg);
-        add(forms, option, ptr);
+        add(forms, option, source.data());
         return CURL_FORMADD_OK;
       }
     }
@@ -59,11 +60,10 @@ namespace dromozoa {
       if (lua_isnoneornil(L, arg)) {
         return CURL_FORMADD_NULL;
       } else {
-        size_t length = 0;
-        const char* ptr = luaL_checklstring(L, arg, &length);
+        luaX_string_reference source = luaX_check_string(L, arg);
         self->new_reference(L, arg);
-        add(forms, option, ptr);
-        add(forms, option_length, length);
+        add(forms, option, source.data());
+        add(forms, option_length, source.size());
         return CURL_FORMADD_OK;
       }
     }

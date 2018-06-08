@@ -1,16 +1,16 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "dromozoa-curl"
-version = "1.13-1"
+version = "1.14-1"
 -- LuaDist source
 source = {
-  tag = "1.13-1",
+  tag = "1.14-1",
   url = "git://github.com/LuaDist-testing/dromozoa-curl.git"
 }
 -- Original source
 -- source = {
---   url = "https://github.com/dromozoa/dromozoa-curl/archive/v1.13.tar.gz";
---   file = "dromozoa-curl-1.13.tar.gz";
+--   url = "https://github.com/dromozoa/dromozoa-curl/archive/v1.14.tar.gz";
+--   file = "dromozoa-curl-1.14.tar.gz";
 -- }
 description = {
   summary = "Lua bindings for libcurl";

@@ -32,7 +32,7 @@
 #endif
 
 #if !CURL_AT_LEAST_VERSION(7,17,0)
-#error libcurl 7.17.0 or newer is required
+#error libcurl 7.17.0 or newer required
 #endif
 
 #if !CURL_AT_LEAST_VERSION(7,21,5)
