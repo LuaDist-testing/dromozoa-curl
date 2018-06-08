@@ -62,25 +62,33 @@ namespace dromozoa {
     }
 
     template <class T>
-    CURLMcode setopt_integer(lua_State* L, CURLMoption option) {
+    inline CURLMcode setopt_integer(lua_State* L, CURLMoption option) {
       return curl_multi_setopt(check_multi(L, 1), option, luaX_check_integer<T>(L, 3));
     }
 
     template <class T>
-    CURLMcode setopt_function(lua_State* L, CURLMoption option, CURLMoption option_data, const T& callback) {
+    inline CURLMcode setopt_function(lua_State* L, CURLMoption option, CURLMoption option_data, const T& callback) {
       multi_handle* self = check_multi_handle(L, 1);
-      lua_pushvalue(L, 3);
-      luaX_reference* ref = self->new_reference(option, L);
-      CURLMcode result = curl_multi_setopt(self->get(), option, &callback);
-      if (result == CURLM_OK) {
-        result = curl_multi_setopt(self->get(), option_data, ref);
+      CURLMcode result = CURLM_UNKNOWN_OPTION;
+      if (lua_isnoneornil(L, 3)) {
+        result = curl_multi_setopt(self->get(), option, 0);
+        if (result == CURLM_OK) {
+          result = curl_multi_setopt(self->get(), option_data, 0);
+        }
+      } else {
+        lua_pushvalue(L, 3);
+        luaX_reference* ref = self->new_reference(option, L);
+        result = curl_multi_setopt(self->get(), option, &callback);
+        if (result == CURLM_OK) {
+          result = curl_multi_setopt(self->get(), option_data, ref);
+        }
       }
       return result;
     }
 
     void impl_setopt(lua_State* L) {
       CURLMoption option = luaX_check_enum<CURLMoption>(L, 2);
-      CURLMcode result = CURLM_OK;
+      CURLMcode result = CURLM_UNKNOWN_OPTION;
       switch (multi_setopt_param(option)) {
         case multi_setopt_param_long:
           result = setopt_integer<long>(L, option);

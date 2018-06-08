@@ -248,6 +248,8 @@ out:write(([[
 #ifndef DROMOZOA_SYMBOLS_HPP
 #define DROMOZOA_SYMBOLS_HPP
 
+#include "common.hpp"
+
 namespace dromozoa {
   enum easy_setopt_param_enum {
     easy_setopt_param_unknown,

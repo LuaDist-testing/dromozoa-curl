@@ -62,7 +62,7 @@ namespace dromozoa {
     }
 
     template <class T>
-    CURLFORMcode save_forms_integer(std::vector<struct curl_forms>& forms, lua_State* L, int arg, CURLformoption option) {
+    inline CURLFORMcode save_forms_integer(std::vector<struct curl_forms>& forms, lua_State* L, int arg, CURLformoption option) {
       save_forms(forms, option, luaX_check_integer<T>(L, arg));
       return CURL_FORMADD_OK;
     }

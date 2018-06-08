@@ -33,10 +33,15 @@ namespace dromozoa {
       curl_global_cleanup();
       luaX_push_success(L);
     }
+
+    void impl_version(lua_State* L) {
+      luaX_push(L, curl_version());
+    }
   }
 
   void initialize_main(lua_State* L) {
     luaX_set_field(L, -1, "global_init", impl_global_init);
     luaX_set_field(L, -1, "global_cleanup", impl_global_cleanup);
+    luaX_set_field(L, -1, "version", impl_version);
   }
 }

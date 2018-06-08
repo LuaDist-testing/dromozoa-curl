@@ -20,7 +20,7 @@
 namespace dromozoa {
   namespace {
     template <class T>
-    CURLcode getinfo(lua_State* L, CURLINFO info) {
+    inline CURLcode getinfo(lua_State* L, CURLINFO info) {
       T value = 0;
       CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &value);
       if (result == CURLE_OK) {
@@ -32,8 +32,8 @@ namespace dromozoa {
     CURLcode getinfo_slist(lua_State* L, CURLINFO info) {
       struct curl_slist* slist = 0;
       CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &slist);
+      string_list list(slist);
       if (result == CURLE_OK) {
-        string_list list(slist);
         lua_newtable(L);
         struct curl_slist* item = list.get();
         for (int i = 1; item; ++i) {
@@ -64,7 +64,7 @@ namespace dromozoa {
 
     void impl_getinfo(lua_State* L) {
       CURLINFO info = luaX_check_enum<CURLINFO>(L, 2);
-      CURLcode result = CURLE_OK;
+      CURLcode result = CURLE_UNKNOWN_OPTION;
       switch (info & CURLINFO_TYPEMASK) {
         case CURLINFO_STRING:
           result = getinfo<const char*>(L, info);

@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with dromozoa-curl.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <stdio.h>
 #include <string.h>
 
 #include "common.hpp"
@@ -29,14 +30,16 @@ namespace dromozoa {
       int top = lua_gettop(L);
       ref->get_field();
       luaX_push(L, n);
-      size_t result = CURLE_ABORTED_BY_CALLBACK;
+      size_t result = CURL_READFUNC_ABORT;
       int r = lua_pcall(L, 1, 1, 0);
       if (r == 0) {
-        if (const char* data = lua_tolstring(L, -1, &result)) {
+        if (luaX_is_integer(L, -1)) {
+          result = lua_tointeger(L, -1);
+        } else if (const char* data = lua_tolstring(L, -1, &result)) {
           if (result <= n) {
             memcpy(buffer, data, result);
           } else {
-            result = CURLE_ABORTED_BY_CALLBACK;
+            result = CURL_READFUNC_ABORT;
           }
         } else {
           result = 0;
@@ -71,52 +74,69 @@ namespace dromozoa {
     }
 
     CURLcode setopt_string(lua_State* L, CURLoption option) {
-      return curl_easy_setopt(check_easy(L, 1), option, luaL_checkstring(L, 3));
+      if (lua_isnoneornil(L, 3)) {
+        return curl_easy_setopt(check_easy(L, 1), option, 0);
+      } else {
+        return curl_easy_setopt(check_easy(L, 1), option, luaL_checkstring(L, 3));
+      }
     }
 
     template <class T>
-    CURLcode setopt_integer(lua_State* L, CURLoption option) {
+    inline CURLcode setopt_integer(lua_State* L, CURLoption option) {
       return curl_easy_setopt(check_easy(L, 1), option, luaX_check_integer<T>(L, 3));
     }
 
     CURLcode setopt_httppost(lua_State* L, CURLoption option) {
+      luaL_checkany(L, 3);
       easy_handle* self = check_easy_handle(L, 1);
       lua_pushvalue(L, 3);
       self->new_reference(option, L);
-      httppost_handle* that = check_httppost_handle(L, 3);
-      CURLcode result = curl_easy_setopt(self->get(), option, that->get());
-      if (result == CURLE_OK && that->have_stream()) {
+      httppost_handle* form = check_httppost_handle(L, 3);
+      CURLcode result = curl_easy_setopt(self->get(), option, form->get());
+      if (result == CURLE_OK && form->have_stream()) {
         result = curl_easy_setopt(self->get(), CURLOPT_READFUNCTION, read_callback);
       }
       return result;
     }
 
     CURLcode setopt_slist(lua_State* L, CURLoption option) {
-      string_list list(L, 3);
-      if (list.get()) {
-        easy_handle* self = check_easy_handle(L, 1);
-        self->save_slist(option, list.get());
-        return curl_easy_setopt(self->get(), option, list.release());
+      easy_handle* self = check_easy_handle(L, 1);
+      CURLcode result = CURLE_UNKNOWN_OPTION;
+      if (lua_isnoneornil(L, 3)) {
+        result = curl_easy_setopt(self->get(), option, 0);
       } else {
-        return CURLE_UNKNOWN_OPTION;
+        string_list list(L, 3);
+        if (list.get()) {
+          self->save_slist(option, list.get());
+          result = curl_easy_setopt(self->get(), option, list.release());
+        }
       }
+      return result;
     }
 
     template <class T>
-    CURLcode setopt_function(lua_State* L, CURLoption option, CURLoption option_data, const T& callback) {
+    inline CURLcode setopt_function(lua_State* L, CURLoption option, CURLoption option_data, const T& callback, void* default_data) {
       easy_handle* self = check_easy_handle(L, 1);
-      lua_pushvalue(L, 3);
-      luaX_reference* ref = self->new_reference(option, L);
-      CURLcode result = curl_easy_setopt(self->get(), option, callback);
-      if (result == CURLE_OK) {
-        result = curl_easy_setopt(self->get(), option_data, ref);
+      CURLcode result = CURLE_UNKNOWN_OPTION;
+      if (lua_isnoneornil(L, 3)) {
+        result = curl_easy_setopt(self->get(), option, 0);
+        if (result == CURLE_OK) {
+          result = curl_easy_setopt(self->get(), option_data, default_data);
+        }
+      } else {
+        lua_pushvalue(L, 3);
+        luaX_reference* ref = self->new_reference(option, L);
+        result = curl_easy_setopt(self->get(), option, callback);
+        if (result == CURLE_OK) {
+          result = curl_easy_setopt(self->get(), option_data, ref);
+        }
       }
       return result;
     }
 
     void impl_setopt(lua_State* L) {
       CURLoption option = luaX_check_enum<CURLoption>(L, 2);
-      CURLcode result = CURLE_OK;
+      CURLcode result = CURLE_UNKNOWN_OPTION;
       switch (easy_setopt_param(option)) {
         case easy_setopt_param_char_p:
           switch (option) {
@@ -142,13 +162,13 @@ namespace dromozoa {
         case easy_setopt_param_callback:
           switch (option) {
             case CURLOPT_READFUNCTION:
-              result = setopt_function(L, option, CURLOPT_READDATA, read_callback);
+              result = setopt_function(L, option, CURLOPT_READDATA, read_callback, stdin);
               break;
             case CURLOPT_HEADERFUNCTION:
-              result = setopt_function(L, option, CURLOPT_HEADERDATA, write_callback);
+              result = setopt_function(L, option, CURLOPT_HEADERDATA, write_callback, 0);
               break;
             case CURLOPT_WRITEFUNCTION:
-              result = setopt_function(L, option, CURLOPT_WRITEDATA, write_callback);
+              result = setopt_function(L, option, CURLOPT_WRITEDATA, write_callback, stdout);
               break;
             default:
               result = CURLE_UNKNOWN_OPTION;

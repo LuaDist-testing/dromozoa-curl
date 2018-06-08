@@ -118,4 +118,5 @@ for item in data:each() do
   -- print(item.name, item.value)
 end
 
+print("version", curl.version())
 assert(curl.global_cleanup())
