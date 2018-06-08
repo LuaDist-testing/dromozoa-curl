@@ -27,8 +27,7 @@ namespace dromozoa {
       {
         ref->get_field(L);
         new_easy_ref(L, easy);
-        luaX_push(L, s);
-        luaX_push(L, what);
+        luaX_push(L, s, what);
         if (lua_pcall(L, 3, 0, 0) == 0) {
           return 0;
         } else {

@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -20,20 +20,14 @@
 
 namespace dromozoa {
   void push_error(lua_State* L, CURLcode code) {
-    luaX_push(L, luaX_nil);
-    luaX_push(L, curl_easy_strerror(code));
-    luaX_push<lua_Integer>(L, code);
+    luaX_push(L, luaX_nil, curl_easy_strerror(code), static_cast<lua_Integer>(code));
   }
 
   void push_error(lua_State* L, CURLMcode code) {
-    luaX_push(L, luaX_nil);
-    luaX_push(L, curl_multi_strerror(code));
-    luaX_push<lua_Integer>(L, code);
+    luaX_push(L, luaX_nil, curl_multi_strerror(code), static_cast<lua_Integer>(code));
   }
 
   void push_error(lua_State* L, CURLFORMcode code) {
-    luaX_push(L, luaX_nil);
-    luaX_push(L, error_to_string(code));
-    luaX_push<lua_Integer>(L, code);
+    luaX_push(L, luaX_nil, error_to_string(code), static_cast<lua_Integer>(code));
   }
 }
