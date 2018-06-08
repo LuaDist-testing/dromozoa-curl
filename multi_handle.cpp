@@ -28,7 +28,7 @@ namespace dromozoa {
 
   CURLMcode multi_handle::cleanup() {
     std::map<CURLMoption, luaX_binder*>::iterator i = references_.begin();
-    std::map<CURLMoption, luaX_binder*>::iterator end = references_.begin();
+    std::map<CURLMoption, luaX_binder*>::iterator end = references_.end();
     for (; i != end; ++i) {
       delete i->second;
     }

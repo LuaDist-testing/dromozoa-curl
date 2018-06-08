@@ -73,7 +73,7 @@ namespace dromozoa {
   void easy_handle::clear() {
     {
       std::map<CURLoption, luaX_binder*>::iterator i = references_.begin();
-      std::map<CURLoption, luaX_binder*>::iterator end = references_.begin();
+      std::map<CURLoption, luaX_binder*>::iterator end = references_.end();
       for (; i != end; ++i) {
         delete i->second;
       }
