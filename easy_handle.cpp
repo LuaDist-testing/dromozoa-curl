@@ -38,9 +38,11 @@ namespace dromozoa {
         DROMOZOA_UNEXPECTED(curl_multi_strerror(result));
       }
     }
+
     CURL* handle = handle_;
     handle_ = 0;
     curl_easy_cleanup(handle);
+
     clear();
   }
 
@@ -50,10 +52,10 @@ namespace dromozoa {
 
   void easy_handle::clear() {
     {
-      std::map<CURLoption, luaX_binder*>::iterator i = references_.begin();
-      std::map<CURLoption, luaX_binder*>::iterator end = references_.end();
+      std::map<CURLoption, luaX_reference<>*>::iterator i = references_.begin();
+      std::map<CURLoption, luaX_reference<>*>::iterator end = references_.end();
       for (; i != end; ++i) {
-        delete i->second;
+        scoped_ptr<luaX_reference<> > deleter(i->second);
       }
       references_.clear();
     }
@@ -69,27 +71,21 @@ namespace dromozoa {
   }
 
   luaX_reference<>* easy_handle::new_reference(CURLoption option, lua_State* L, int index) {
-    luaX_reference<>* reference = 0;
-    try {
-      reference = new luaX_reference<>(L, index);
-      std::map<CURLoption, luaX_binder*>::iterator i = references_.find(option);
-      if (i == references_.end()) {
-        references_.insert(std::make_pair(option, reference));
-      } else {
-        delete i->second;
-        i->second = reference;
-      }
-      return reference;
-    } catch (...) {
-      delete reference;
-      throw;
+    scoped_ptr<luaX_reference<> > reference(new luaX_reference<>(L, index));
+    std::map<CURLoption, luaX_reference<>*>::iterator i = references_.find(option);
+    if (i == references_.end()) {
+      references_.insert(std::make_pair(option, reference.get()));
+    } else {
+      scoped_ptr<luaX_reference<> > deleter(i->second);
+      i->second = reference.get();
     }
+    return reference.release();
   }
 
   void easy_handle::delete_reference(CURLoption option) {
-    std::map<CURLoption, luaX_binder*>::iterator i = references_.find(option);
+    std::map<CURLoption, luaX_reference<>*>::iterator i = references_.find(option);
     if (i != references_.end()) {
-      delete i->second;
+      scoped_ptr<luaX_reference<> > deleter(i->second);
       references_.erase(i);
     }
   }
