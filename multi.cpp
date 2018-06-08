@@ -86,6 +86,10 @@ namespace dromozoa {
         luaX_push(L, luaX_nil);
       }
     }
+
+    void impl_get_address(lua_State* L) {
+      lua_pushlightuserdata(L, check_multi(L, 1));
+    }
   }
 
   multi_handle* check_multi_handle(lua_State* L, int arg) {
@@ -123,6 +127,7 @@ namespace dromozoa {
       luaX_set_field(L, -1, "remove_handle", impl_remove_handle);
       luaX_set_field(L, -1, "socket_action", impl_socket_action);
       luaX_set_field(L, -1, "info_read", impl_info_read);
+      luaX_set_field(L, -1, "get_address", impl_get_address);
 
       initialize_multi_setopt(L);
     }

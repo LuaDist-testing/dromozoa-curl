@@ -34,6 +34,8 @@ local easy2 = assert(curl.easy())
 assert(easy2:setopt(curl.CURLOPT_URL, "https://dromozoa.s3.amazonaws.com/pub/dromozoa-s3-browser/1.2/dromozoa-s3-browser.js"))
 assert(multi:add_handle(easy2))
 
+assert(easy1:get_address() ~= easy2:get_address())
+
 local socket_map = {}
 
 multi:setopt(curl.CURLMOPT_SOCKETFUNCTION, function (easy, s, what)
@@ -115,6 +117,8 @@ while true do
   else
     assert(info.msg == curl.CURLMSG_DONE)
     assert(info.result == curl.CURLE_OK)
+    local address = info.easy_handle:get_address()
+    assert(address == easy1:get_address() or address == easy2:get_address())
   end
 end
 

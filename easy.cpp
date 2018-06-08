@@ -50,6 +50,10 @@ namespace dromozoa {
         push_error(L, result);
       }
     }
+
+    void impl_get_address(lua_State* L) {
+      lua_pushlightuserdata(L, check_easy(L, 1));
+    }
   }
 
   easy_handle* check_easy_handle(lua_State* L, int arg) {
@@ -86,6 +90,7 @@ namespace dromozoa {
       luaX_set_field(L, -1, "cleanup", impl_cleanup);
       luaX_set_field(L, -1, "reset", impl_reset);
       luaX_set_field(L, -1, "perform", impl_perform);
+      luaX_set_field(L, -1, "get_address", impl_get_address);
 
       initialize_easy_setopt(L);
       initialize_easy_getinfo(L);
