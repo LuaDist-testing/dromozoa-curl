@@ -37,9 +37,9 @@ namespace dromozoa {
         if (r == 0) {
           if (luaX_is_integer(L, -1)) {
             result = lua_tointeger(L, -1);
-          } else if (const char* data = lua_tolstring(L, -1, &result)) {
+          } else if (const char* ptr = lua_tolstring(L, -1, &result)) {
             if (result <= n) {
-              memcpy(buffer, data, result);
+              memcpy(buffer, ptr, result);
             } else {
               result = CURL_READFUNC_ABORT;
             }

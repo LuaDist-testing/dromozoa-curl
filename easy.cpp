@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -54,6 +54,29 @@ namespace dromozoa {
     void impl_get_address(lua_State* L) {
       lua_pushlightuserdata(L, check_easy(L, 1));
     }
+
+    void impl_escape(lua_State* L) {
+      size_t length = 0;
+      const char* url = luaL_checklstring(L, 2, &length);
+      if (char* result = curl_easy_escape(check_easy(L, 1), url, length)) {
+        luaX_push(L, result);
+        curl_free(result);
+      } else {
+        push_error(L, CURLE_CONV_FAILED);
+      }
+    }
+
+    void impl_unescape(lua_State* L) {
+      size_t in_length = 0;
+      const char* url = luaL_checklstring(L, 2, &in_length);
+      int out_length = 0;
+      if (char* result = curl_easy_unescape(check_easy(L, 1), url, in_length, &out_length)) {
+        lua_pushlstring(L, result, out_length);
+        curl_free(result);
+      } else {
+        push_error(L, CURLE_CONV_FAILED);
+      }
+    }
   }
 
   easy_handle* check_easy_handle(lua_State* L, int arg) {
@@ -91,6 +114,8 @@ namespace dromozoa {
       luaX_set_field(L, -1, "reset", impl_reset);
       luaX_set_field(L, -1, "perform", impl_perform);
       luaX_set_field(L, -1, "get_address", impl_get_address);
+      luaX_set_field(L, -1, "escape", impl_escape);
+      luaX_set_field(L, -1, "unescape", impl_unescape);
 
       initialize_easy_setopt(L);
       initialize_easy_getinfo(L);
