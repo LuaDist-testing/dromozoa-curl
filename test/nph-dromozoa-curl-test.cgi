@@ -66,6 +66,7 @@ if command == "sleep" then
 
   io.write("HTTP/1.1 200 OK\r\n")
   io.write("Content-Type: text/plain; charset=UTF-8\r\n")
+  io.write("X-LWS: foo\r\n bar\r\n\tbaz\r\n")
   io.write("\r\n")
 
   for i = 1, sleep_count do
@@ -96,6 +97,7 @@ elseif command == "redirect" then
 else
   io.write("HTTP/1.1 200 Not Found\r\n")
   io.write("Content-Type: application/json; charset=UTF-8\r\n")
+  io.write("X-LWS: foor\r\n bar\r\n\tbaz\r\n")
   io.write("\r\n")
   io.write(json.encode(result, { pretty = true }), "\n")
 end
