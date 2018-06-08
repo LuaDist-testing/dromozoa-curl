@@ -20,17 +20,16 @@
 namespace dromozoa {
   namespace {
     template <class T>
-    void getinfo(lua_State* L, CURLINFO info) {
+    CURLcode getinfo(lua_State* L, CURLINFO info) {
       T value = 0;
       CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &value);
       if (result == CURLE_OK) {
         luaX_push(L, value);
-      } else {
-        push_error(L, result);
       }
+      return result;
     }
 
-    void getinfo_slist(lua_State* L, CURLINFO info) {
+    CURLcode getinfo_slist(lua_State* L, CURLINFO info) {
       struct curl_slist* slist = 0;
       CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &slist);
       if (result == CURLE_OK) {
@@ -41,12 +40,11 @@ namespace dromozoa {
           luaX_set_field(L, -1, i, item->data);
           item = item->next;
         }
-      } else {
-        push_error(L, result);
       }
+      return result;
     }
 
-    void getinfo_certinfo(lua_State* L, CURLINFO info) {
+    CURLcode getinfo_certinfo(lua_State* L, CURLINFO info) {
       struct curl_certinfo* certinfo = 0;
       CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &certinfo);
       if (result == CURLE_OK) {
@@ -60,48 +58,50 @@ namespace dromozoa {
           }
           luaX_set_field(L, -2, i + 1);
         }
-      } else {
-        push_error(L, result);
       }
+      return result;
     }
 
     void impl_getinfo(lua_State* L) {
       CURLINFO info = luaX_check_enum<CURLINFO>(L, 2);
+      CURLcode result = CURLE_OK;
       switch (info & CURLINFO_TYPEMASK) {
         case CURLINFO_STRING:
-          getinfo<const char*>(L, info);
-          return;
+          result = getinfo<const char*>(L, info);
+          break;
         case CURLINFO_LONG:
-          getinfo<long>(L, info);
-          return;
+          result = getinfo<long>(L, info);
+          break;
         case CURLINFO_DOUBLE:
-          getinfo<double>(L, info);
-          return;
+          result = getinfo<double>(L, info);
+          break;
         case CURLINFO_SLIST:
           switch (info) {
             case CURLINFO_CERTINFO:
-              getinfo_certinfo(L, info);
-              return;
+              result = getinfo_certinfo(L, info);
+              break;
 #if CURL_AT_LEAST_VERSION(7,34,0)
             case CURLINFO_TLS_SESSION:
 #if CURL_AT_LEAST_VERSION(7,48,0)
             case CURLINFO_TLS_SSL_PTR:
 #endif
-              push_error(L, CURLE_UNKNOWN_OPTION);
-              return;
+              result = CURLE_UNKNOWN_OPTION;
+              break;
 #endif
             default:
-              getinfo_slist(L, info);
-              return;
+              result = getinfo_slist(L, info);
           }
-          return;
+          break;
 #if CURL_AT_LEAST_VERSION(7,45,0)
         case CURLINFO_SOCKET:
-          getinfo<curl_socket_t>(L, info);
-          return;
+          result = getinfo<curl_socket_t>(L, info);
+          break;
 #endif
         default:
-          push_error(L, CURLE_UNKNOWN_OPTION);
+          result = CURLE_UNKNOWN_OPTION;
+      }
+      if (result != CURLE_OK) {
+        push_error(L, result);
       }
     }
   }

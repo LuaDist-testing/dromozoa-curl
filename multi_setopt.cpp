@@ -62,55 +62,48 @@ namespace dromozoa {
     }
 
     template <class T>
-    void setopt_integer(lua_State* L, CURLMoption option) {
-      CURLMcode result = curl_multi_setopt(check_multi(L, 1), option, luaX_check_integer<T>(L, 3));
-      if (result == CURLM_OK) {
-        luaX_push_success(L);
-      } else {
-        push_error(L, result);
-      }
+    CURLMcode setopt_integer(lua_State* L, CURLMoption option) {
+      return curl_multi_setopt(check_multi(L, 1), option, luaX_check_integer<T>(L, 3));
     }
 
     template <class T>
-    void setopt_function(lua_State* L, CURLMoption option, CURLMoption option_data, const T& callback) {
+    CURLMcode setopt_function(lua_State* L, CURLMoption option, CURLMoption option_data, const T& callback) {
       multi_handle* self = check_multi_handle(L, 1);
       lua_pushvalue(L, 3);
       luaX_reference* ref = self->new_reference(option, L);
       CURLMcode result = curl_multi_setopt(self->get(), option, &callback);
       if (result == CURLM_OK) {
         result = curl_multi_setopt(self->get(), option_data, ref);
-        if (result == CURLM_OK) {
-          luaX_push_success(L);
-        } else {
-          push_error(L, result);
-        }
-      } else {
-        push_error(L, result);
       }
+      return result;
     }
 
     void impl_setopt(lua_State* L) {
       CURLMoption option = luaX_check_enum<CURLMoption>(L, 2);
+      CURLMcode result = CURLM_OK;
       switch (multi_setopt_param(option)) {
         case multi_setopt_param_long:
-          setopt_integer<long>(L, option);
-          return;
+          result = setopt_integer<long>(L, option);
+          break;
         case multi_setopt_param_callback:
           switch (option) {
             case CURLMOPT_SOCKETFUNCTION:
-              setopt_function(L, option, CURLMOPT_SOCKETDATA, socket_callback);
-              return;
+              result = setopt_function(L, option, CURLMOPT_SOCKETDATA, socket_callback);
+              break;
             case CURLMOPT_TIMERFUNCTION:
-              setopt_function(L, option, CURLMOPT_TIMERDATA, timer_callback);
-              return;
+              result = setopt_function(L, option, CURLMOPT_TIMERDATA, timer_callback);
+              break;
             default:
-              push_error(L, CURLM_UNKNOWN_OPTION);
-              return;
+              result = CURLM_UNKNOWN_OPTION;
           }
-          return;
+          break;
         default:
-          push_error(L, CURLM_UNKNOWN_OPTION);
-          return;
+          result = CURLM_UNKNOWN_OPTION;
+      }
+      if (result == CURLM_OK) {
+        luaX_push_success(L);
+      } else {
+        push_error(L, result);
       }
     }
   }

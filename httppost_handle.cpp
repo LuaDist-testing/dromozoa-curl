@@ -122,18 +122,14 @@ namespace dromozoa {
   }
 
   CURLFORMcode httppost_handle::add(lua_State* L) {
-    int top = lua_gettop(L);
-
     std::vector<struct curl_forms> forms;
-
+    int top = lua_gettop(L);
     for (int arg = 2; arg <= top; arg += 2) {
       CURLformoption option = luaX_check_enum<CURLformoption>(L, arg);
       if (option == CURLFORM_END) {
         break;
       }
-
       CURLFORMcode result = CURL_FORMADD_OK;
-
       switch (option) {
         case CURLFORM_FILECONTENT:
         case CURLFORM_FILE:
@@ -142,11 +138,9 @@ namespace dromozoa {
         case CURLFORM_BUFFER:
           result = save_forms_string(forms, L, arg + 1, option);
           break;
-
         case CURLFORM_COPYNAME:
           result = save_forms_string(forms, L, arg + 1, option, CURLFORM_NAMELENGTH);
           break;
-
         case CURLFORM_COPYCONTENTS:
 #if CURL_AT_LEAST_VERSION(7,46,0)
           result = save_forms_string(forms, L, arg + 1, option, CURLFORM_CONTENTLEN);
@@ -154,40 +148,32 @@ namespace dromozoa {
           result = save_forms_string(forms, L, arg + 1, option, CURLFORM_CONTENTSLENGTH);
 #endif
           break;
-
         case CURLFORM_BUFFERPTR:
           result = save_forms_string(forms, L, arg + 1, option, CURLFORM_BUFFERLENGTH);
           break;
-
 #if CURL_AT_LEAST_VERSION(7,46,0)
         case CURLFORM_CONTENTLEN:
 #endif
         case CURLFORM_CONTENTSLENGTH:
           result = save_forms_integer<size_t>(forms, L, arg + 1, option);
           break;
-
 #if CURL_AT_LEAST_VERSION(7,18,2)
         case CURLFORM_STREAM:
           result = save_forms_function(forms, L, arg + 1, option);
           break;
 #endif
-
         case CURLFORM_CONTENTHEADER:
           result = save_forms_slist(forms, L, arg + 1, option);
           break;
-
         default:
           result = CURL_FORMADD_UNKNOWN_OPTION;
       }
-
       if (result != CURL_FORMADD_OK) {
         return result;
       }
     }
-
     struct curl_forms f = { CURLFORM_END, 0 };
     forms.push_back(f);
-
     return curl_formadd(&first_, &last_, CURLFORM_ARRAY, &forms[0], CURLFORM_END);
   }
 

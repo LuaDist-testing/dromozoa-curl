@@ -30,6 +30,10 @@ local ignore_symbols = {
   CURL_DID_MEMORY_FUNC_TYPEDEFS = true;
   CURL_STRICTER = true;
   CURLOPT_WRITEINFO = true;
+  CURLKHTYPE_DSS = true;
+  CURLKHTYPE_RSA = true;
+  CURLKHTYPE_RSA1 = true;
+  CURLKHTYPE_UNKNOWN = true;
 }
 
 local alias_symbols = {

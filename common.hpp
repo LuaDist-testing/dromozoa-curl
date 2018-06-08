@@ -35,6 +35,10 @@
 #error
 #endif
 
+#if !CURL_AT_LEAST_VERSION(7,21,5)
+#define CURLE_UNKNOWN_OPTION CURLE_BAD_FUNCTION_ARGUMENT
+#endif
+
 #include <dromozoa/bind.hpp>
 
 namespace dromozoa {

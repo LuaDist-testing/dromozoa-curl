@@ -413,18 +413,6 @@ namespace dromozoa {
 #if 0x071306 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLKHSTAT_REJECT", CURLKHSTAT_REJECT);
 #endif
-#if 0x071306 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLKHTYPE_DSS", CURLKHTYPE_DSS);
-#endif
-#if 0x071306 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLKHTYPE_RSA", CURLKHTYPE_RSA);
-#endif
-#if 0x071306 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLKHTYPE_RSA1", CURLKHTYPE_RSA1);
-#endif
-#if 0x071306 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLKHTYPE_UNKNOWN", CURLKHTYPE_UNKNOWN);
-#endif
 #if 0x071e00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLMOPT_CHUNK_LENGTH_PENALTY_SIZE", CURLMOPT_CHUNK_LENGTH_PENALTY_SIZE);
 #endif
@@ -1967,7 +1955,7 @@ namespace dromozoa {
       case CURL_FORMADD_OK: return "CURL_FORMADD_OK";
       case CURL_FORMADD_OPTION_TWICE: return "CURL_FORMADD_OPTION_TWICE";
       case CURL_FORMADD_UNKNOWN_OPTION: return "CURL_FORMADD_UNKNOWN_OPTION";
-      default: return "unknown error";
+      default: return "CURLFORMcode unknown";
     }
   }
 }
