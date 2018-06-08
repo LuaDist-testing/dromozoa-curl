@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+# Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 #
 # This file is part of dromozoa-curl.
 #
@@ -41,6 +41,9 @@ all: $(TARGET)
 
 clean:
 	rm -f *.o $(TARGET)
+
+check:
+	./test.sh
 
 curl.so: $(OBJS)
 	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@

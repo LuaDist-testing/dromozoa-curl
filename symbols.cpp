@@ -1,5 +1,3 @@
-// generated from curl-7.52.1
-
 #include "common.hpp"
 #include "symbols.hpp"
 
@@ -11,6 +9,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLAUTH_DIGEST", CURLAUTH_DIGEST);
 #if 0x071303 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLAUTH_DIGEST_IE", CURLAUTH_DIGEST_IE);
+#endif
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLAUTH_GSSAPI", CURLAUTH_GSSAPI);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLAUTH_GSSNEGOTIATE", CURLAUTH_GSSNEGOTIATE);
 #if 0x072600 <= LIBCURL_VERSION_NUM
@@ -111,6 +112,9 @@ namespace dromozoa {
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLE_READ_ERROR", CURLE_READ_ERROR);
     luaX_set_field<lua_Integer>(L, -1, "CURLE_RECV_ERROR", CURLE_RECV_ERROR);
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLE_RECURSIVE_API_CALL", CURLE_RECURSIVE_API_CALL);
+#endif
 #if 0x071100 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLE_REMOTE_ACCESS_DENIED", CURLE_REMOTE_ACCESS_DENIED);
 #endif
@@ -295,7 +299,13 @@ namespace dromozoa {
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_CONNECT_TIME", CURLINFO_CONNECT_TIME);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_CONTENT_LENGTH_DOWNLOAD", CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_CONTENT_LENGTH_DOWNLOAD_T", CURLINFO_CONTENT_LENGTH_DOWNLOAD_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_CONTENT_LENGTH_UPLOAD", CURLINFO_CONTENT_LENGTH_UPLOAD);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_CONTENT_LENGTH_UPLOAD_T", CURLINFO_CONTENT_LENGTH_UPLOAD_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_CONTENT_TYPE", CURLINFO_CONTENT_TYPE);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_COOKIELIST", CURLINFO_COOKIELIST);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_DATA_IN", CURLINFO_DATA_IN);
@@ -304,6 +314,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_EFFECTIVE_URL", CURLINFO_EFFECTIVE_URL);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_END", CURLINFO_END);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_FILETIME", CURLINFO_FILETIME);
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_FILETIME_T", CURLINFO_FILETIME_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_FTP_ENTRY_PATH", CURLINFO_FTP_ENTRY_PATH);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_HEADER_IN", CURLINFO_HEADER_IN);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_HEADER_OUT", CURLINFO_HEADER_OUT);
@@ -326,6 +339,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_NAMELOOKUP_TIME", CURLINFO_NAMELOOKUP_TIME);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_NONE", CURLINFO_NONE);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_NUM_CONNECTS", CURLINFO_NUM_CONNECTS);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_OFF_T", CURLINFO_OFF_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_OS_ERRNO", CURLINFO_OS_ERRNO);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_PRETRANSFER_TIME", CURLINFO_PRETRANSFER_TIME);
 #if 0x071300 <= LIBCURL_VERSION_NUM
@@ -341,6 +357,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_PROXYAUTH_AVAIL", CURLINFO_PROXYAUTH_AVAIL);
 #if 0x073400 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_PROXY_SSL_VERIFYRESULT", CURLINFO_PROXY_SSL_VERIFYRESULT);
+#endif
+#if 0x073601 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_PTR", CURLINFO_PTR);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_REDIRECT_COUNT", CURLINFO_REDIRECT_COUNT);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_REDIRECT_TIME", CURLINFO_REDIRECT_TIME);
@@ -365,13 +384,25 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SCHEME", CURLINFO_SCHEME);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SIZE_DOWNLOAD", CURLINFO_SIZE_DOWNLOAD);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SIZE_DOWNLOAD_T", CURLINFO_SIZE_DOWNLOAD_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SIZE_UPLOAD", CURLINFO_SIZE_UPLOAD);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SIZE_UPLOAD_T", CURLINFO_SIZE_UPLOAD_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SLIST", CURLINFO_SLIST);
 #if 0x072d00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SOCKET", CURLINFO_SOCKET);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SPEED_DOWNLOAD", CURLINFO_SPEED_DOWNLOAD);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SPEED_DOWNLOAD_T", CURLINFO_SPEED_DOWNLOAD_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SPEED_UPLOAD", CURLINFO_SPEED_UPLOAD);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SPEED_UPLOAD_T", CURLINFO_SPEED_UPLOAD_T);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SSL_DATA_IN", CURLINFO_SSL_DATA_IN);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SSL_DATA_OUT", CURLINFO_SSL_DATA_OUT);
     luaX_set_field<lua_Integer>(L, -1, "CURLINFO_SSL_ENGINES", CURLINFO_SSL_ENGINES);
@@ -412,6 +443,12 @@ namespace dromozoa {
 #endif
 #if 0x071306 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLKHSTAT_REJECT", CURLKHSTAT_REJECT);
+#endif
+#if 0x073a00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLKHTYPE_ECDSA", CURLKHTYPE_ECDSA);
+#endif
+#if 0x073a00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLKHTYPE_ED25519", CURLKHTYPE_ED25519);
 #endif
 #if 0x071e00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLMOPT_CHUNK_LENGTH_PENALTY_SIZE", CURLMOPT_CHUNK_LENGTH_PENALTY_SIZE);
@@ -459,6 +496,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLM_INTERNAL_ERROR", CURLM_INTERNAL_ERROR);
     luaX_set_field<lua_Integer>(L, -1, "CURLM_OK", CURLM_OK);
     luaX_set_field<lua_Integer>(L, -1, "CURLM_OUT_OF_MEMORY", CURLM_OUT_OF_MEMORY);
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLM_RECURSIVE_API_CALL", CURLM_RECURSIVE_API_CALL);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLM_UNKNOWN_OPTION", CURLM_UNKNOWN_OPTION);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPTTYPE_FUNCTIONPOINT", CURLOPTTYPE_FUNCTIONPOINT);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPTTYPE_LONG", CURLOPTTYPE_LONG);
@@ -466,6 +506,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPTTYPE_OFF_T", CURLOPTTYPE_OFF_T);
 #if 0x072e00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPTTYPE_STRINGPOINT", CURLOPTTYPE_STRINGPOINT);
+#endif
+#if 0x073500 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_ABSTRACT_UNIX_SOCKET", CURLOPT_ABSTRACT_UNIX_SOCKET);
 #endif
 #if 0x071800 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_ACCEPTTIMEOUT_MS", CURLOPT_ACCEPTTIMEOUT_MS);
@@ -578,6 +621,9 @@ namespace dromozoa {
 #if 0x071600 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_GSSAPI_DELEGATION", CURLOPT_GSSAPI_DELEGATION);
 #endif
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_HAPPY_EYEBALLS_TIMEOUT_MS", CURLOPT_HAPPY_EYEBALLS_TIMEOUT_MS);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_HEADER", CURLOPT_HEADER);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_HEADERDATA", CURLOPT_HEADERDATA);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_HEADERFUNCTION", CURLOPT_HEADERFUNCTION);
@@ -609,11 +655,11 @@ namespace dromozoa {
 #if 0x071300 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_ISSUERCERT", CURLOPT_ISSUERCERT);
 #endif
-#if 0x071100 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_KEYPASSWD", CURLOPT_KEYPASSWD);
-#endif
 #if 0x073300 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_KEEP_SENDING_ON_ERROR", CURLOPT_KEEP_SENDING_ON_ERROR);
+#endif
+#if 0x071100 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_KEYPASSWD", CURLOPT_KEYPASSWD);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_KRBLEVEL", CURLOPT_KRBLEVEL);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_LOCALPORT", CURLOPT_LOCALPORT);
@@ -638,6 +684,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_MAXREDIRS", CURLOPT_MAXREDIRS);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_MAX_RECV_SPEED_LARGE", CURLOPT_MAX_RECV_SPEED_LARGE);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_MAX_SEND_SPEED_LARGE", CURLOPT_MAX_SEND_SPEED_LARGE);
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_MIMEPOST", CURLOPT_MIMEPOST);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_NETRC", CURLOPT_NETRC);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_NETRC_FILE", CURLOPT_NETRC_FILE);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_NEW_DIRECTORY_PERMS", CURLOPT_NEW_DIRECTORY_PERMS);
@@ -769,6 +818,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_REDIR_PROTOCOLS", CURLOPT_REDIR_PROTOCOLS);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_REFERER", CURLOPT_REFERER);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_REQUEST_TARGET", CURLOPT_REQUEST_TARGET);
+#endif
 #if 0x071503 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_RESOLVE", CURLOPT_RESOLVE);
 #endif
@@ -813,6 +865,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SHARE", CURLOPT_SHARE);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SOCKOPTDATA", CURLOPT_SOCKOPTDATA);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SOCKOPTFUNCTION", CURLOPT_SOCKOPTFUNCTION);
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SOCKS5_AUTH", CURLOPT_SOCKS5_AUTH);
+#endif
 #if 0x071304 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SOCKS5_GSSAPI_NEC", CURLOPT_SOCKS5_GSSAPI_NEC);
 #endif
@@ -820,6 +875,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SOCKS5_GSSAPI_SERVICE", CURLOPT_SOCKS5_GSSAPI_SERVICE);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SSH_AUTH_TYPES", CURLOPT_SSH_AUTH_TYPES);
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SSH_COMPRESSION", CURLOPT_SSH_COMPRESSION);
+#endif
 #if 0x071101 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SSH_HOST_PUBLIC_KEY_MD5", CURLOPT_SSH_HOST_PUBLIC_KEY_MD5);
 #endif
@@ -872,6 +930,12 @@ namespace dromozoa {
 #if 0x072e00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_STREAM_WEIGHT", CURLOPT_STREAM_WEIGHT);
 #endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_SUPPRESS_CONNECT_HEADERS", CURLOPT_SUPPRESS_CONNECT_HEADERS);
+#endif
+#if 0x073100 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TCP_FASTOPEN", CURLOPT_TCP_FASTOPEN);
+#endif
 #if 0x071900 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TCP_KEEPALIVE", CURLOPT_TCP_KEEPALIVE);
 #endif
@@ -882,9 +946,6 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TCP_KEEPINTVL", CURLOPT_TCP_KEEPINTVL);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TCP_NODELAY", CURLOPT_TCP_NODELAY);
-#if 0x073100 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TCP_FASTOPEN", CURLOPT_TCP_FASTOPEN);
-#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TELNETOPTIONS", CURLOPT_TELNETOPTIONS);
 #if 0x071304 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TFTP_BLKSIZE", CURLOPT_TFTP_BLKSIZE);
@@ -896,6 +957,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TIMEOUT", CURLOPT_TIMEOUT);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TIMEOUT_MS", CURLOPT_TIMEOUT_MS);
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TIMEVALUE", CURLOPT_TIMEVALUE);
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TIMEVALUE_LARGE", CURLOPT_TIMEVALUE_LARGE);
+#endif
 #if 0x071504 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TLSAUTH_PASSWORD", CURLOPT_TLSAUTH_PASSWORD);
 #endif
@@ -908,6 +972,12 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TRANSFERTEXT", CURLOPT_TRANSFERTEXT);
 #if 0x071506 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_TRANSFER_ENCODING", CURLOPT_TRANSFER_ENCODING);
+#endif
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_RESOLVER_START_FUNCTION", CURLOPT_RESOLVER_START_FUNCTION);
+#endif
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLOPT_RESOLVER_START_DATA", CURLOPT_RESOLVER_START_DATA);
 #endif
 #if 0x072800 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLOPT_UNIX_SOCKET_PATH", CURLOPT_UNIX_SOCKET_PATH);
@@ -1054,11 +1124,11 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURLPROTO_TFTP", CURLPROTO_TFTP);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLPROXY_HTTP", CURLPROXY_HTTP);
-#if 0x071304 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURLPROXY_HTTP_1_0", CURLPROXY_HTTP_1_0);
-#endif
 #if 0x073400 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLPROXY_HTTPS", CURLPROXY_HTTPS);
+#endif
+#if 0x071304 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLPROXY_HTTP_1_0", CURLPROXY_HTTP_1_0);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLPROXY_SOCKS4", CURLPROXY_SOCKS4);
 #if 0x071200 <= LIBCURL_VERSION_NUM
@@ -1091,6 +1161,9 @@ namespace dromozoa {
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLSSH_AUTH_ANY", CURLSSH_AUTH_ANY);
     luaX_set_field<lua_Integer>(L, -1, "CURLSSH_AUTH_DEFAULT", CURLSSH_AUTH_DEFAULT);
+#if 0x073a00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLSSH_AUTH_GSSAPI", CURLSSH_AUTH_GSSAPI);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURLSSH_AUTH_HOST", CURLSSH_AUTH_HOST);
     luaX_set_field<lua_Integer>(L, -1, "CURLSSH_AUTH_KEYBOARD", CURLSSH_AUTH_KEYBOARD);
     luaX_set_field<lua_Integer>(L, -1, "CURLSSH_AUTH_NONE", CURLSSH_AUTH_NONE);
@@ -1147,6 +1220,18 @@ namespace dromozoa {
 #if 0x072c00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLSSLOPT_NO_REVOKE", CURLSSLOPT_NO_REVOKE);
 #endif
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLSSLSET_NO_BACKENDS", CURLSSLSET_NO_BACKENDS);
+#endif
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLSSLSET_OK", CURLSSLSET_OK);
+#endif
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLSSLSET_TOO_LATE", CURLSSLSET_TOO_LATE);
+#endif
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLSSLSET_UNKNOWN_BACKEND", CURLSSLSET_UNKNOWN_BACKEND);
+#endif
 #if 0x071100 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLUSESSL_ALL", CURLUSESSL_ALL);
 #endif
@@ -1158,6 +1243,9 @@ namespace dromozoa {
 #endif
 #if 0x071100 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURLUSESSL_TRY", CURLUSESSL_TRY);
+#endif
+#if 0x073900 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURLVERSION_FIFTH", CURLVERSION_FIFTH);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURLVERSION_FIRST", CURLVERSION_FIRST);
     luaX_set_field<lua_Integer>(L, -1, "CURLVERSION_FOURTH", CURLVERSION_FOURTH);
@@ -1208,6 +1296,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURL_GLOBAL_NOTHING", CURL_GLOBAL_NOTHING);
     luaX_set_field<lua_Integer>(L, -1, "CURL_GLOBAL_SSL", CURL_GLOBAL_SSL);
     luaX_set_field<lua_Integer>(L, -1, "CURL_GLOBAL_WIN32", CURL_GLOBAL_WIN32);
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_HET_DEFAULT", CURL_HET_DEFAULT);
+#endif
 #if 0x072e00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_HTTPPOST_BUFFER", CURL_HTTPPOST_BUFFER);
 #endif
@@ -1237,11 +1328,11 @@ namespace dromozoa {
 #if 0x072b00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_HTTP_VERSION_2", CURL_HTTP_VERSION_2);
 #endif
-#if 0x072100 <= LIBCURL_VERSION_NUM
-    luaX_set_field<lua_Integer>(L, -1, "CURL_HTTP_VERSION_2_0", CURL_HTTP_VERSION_2_0);
-#endif
 #if 0x072f00 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_HTTP_VERSION_2TLS", CURL_HTTP_VERSION_2TLS);
+#endif
+#if 0x072100 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_HTTP_VERSION_2_0", CURL_HTTP_VERSION_2_0);
 #endif
 #if 0x073100 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE", CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
@@ -1261,6 +1352,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURL_LOCK_DATA_SSL_SESSION", CURL_LOCK_DATA_SSL_SESSION);
 #if 0x071307 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_MAX_HTTP_HEADER", CURL_MAX_HTTP_HEADER);
+#endif
+#if 0x073500 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_MAX_READ_SIZE", CURL_MAX_READ_SIZE);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_MAX_WRITE_SIZE", CURL_MAX_WRITE_SIZE);
     luaX_set_field<lua_Integer>(L, -1, "CURL_NETRC_IGNORED", CURL_NETRC_IGNORED);
@@ -1353,6 +1447,24 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURL_SOCKOPT_OK", CURL_SOCKOPT_OK);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_DEFAULT", CURL_SSLVERSION_DEFAULT);
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_MAX_DEFAULT", CURL_SSLVERSION_MAX_DEFAULT);
+#endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_MAX_NONE", CURL_SSLVERSION_MAX_NONE);
+#endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_MAX_TLSv1_0", CURL_SSLVERSION_MAX_TLSv1_0);
+#endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_MAX_TLSv1_1", CURL_SSLVERSION_MAX_TLSv1_1);
+#endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_MAX_TLSv1_2", CURL_SSLVERSION_MAX_TLSv1_2);
+#endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_MAX_TLSv1_3", CURL_SSLVERSION_MAX_TLSv1_3);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_SSLv2", CURL_SSLVERSION_SSLv2);
     luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_SSLv3", CURL_SSLVERSION_SSLv3);
     luaX_set_field<lua_Integer>(L, -1, "CURL_SSLVERSION_TLSv1", CURL_SSLVERSION_TLSv1);
@@ -1379,6 +1491,9 @@ namespace dromozoa {
     luaX_set_field<lua_Integer>(L, -1, "CURL_TLSAUTH_SRP", CURL_TLSAUTH_SRP);
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_ASYNCHDNS", CURL_VERSION_ASYNCHDNS);
+#if 0x073900 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_BROTLI", CURL_VERSION_BROTLI);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_CONV", CURL_VERSION_CONV);
 #if 0x071306 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_CURLDEBUG", CURL_VERSION_CURLDEBUG);
@@ -1402,6 +1517,9 @@ namespace dromozoa {
 #endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_LARGEFILE", CURL_VERSION_LARGEFILE);
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_LIBZ", CURL_VERSION_LIBZ);
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_MULTI_SSL", CURL_VERSION_MULTI_SSL);
+#endif
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_NTLM", CURL_VERSION_NTLM);
 #if 0x071600 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_VERSION_NTLM_WB", CURL_VERSION_NTLM_WB);
@@ -1430,9 +1548,15 @@ namespace dromozoa {
 #if 0x071200 <= LIBCURL_VERSION_NUM
     luaX_set_field<lua_Integer>(L, -1, "CURL_WRITEFUNC_PAUSE", CURL_WRITEFUNC_PAUSE);
 #endif
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    luaX_set_field<lua_Integer>(L, -1, "CURL_ZERO_TERMINATED", CURL_ZERO_TERMINATED);
+#endif
   }
 
   easy_setopt_param_enum easy_setopt_param(CURLoption option) {
+#if 0x073500 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_ABSTRACT_UNIX_SOCKET) { return easy_setopt_param_char_p; }
+#endif
 #if 0x071800 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_ACCEPTTIMEOUT_MS) { return easy_setopt_param_long; }
 #endif
@@ -1544,6 +1668,9 @@ namespace dromozoa {
 #if 0x071600 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_GSSAPI_DELEGATION) { return easy_setopt_param_long; }
 #endif
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_HAPPY_EYEBALLS_TIMEOUT_MS) { return easy_setopt_param_long; }
+#endif
     if (option == CURLOPT_HEADER) { return easy_setopt_param_long; }
     if (option == CURLOPT_HEADERDATA) { return easy_setopt_param_void_p; }
     if (option == CURLOPT_HEADERFUNCTION) { return easy_setopt_param_callback; }
@@ -1575,11 +1702,11 @@ namespace dromozoa {
 #if 0x071300 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_ISSUERCERT) { return easy_setopt_param_char_p; }
 #endif
-#if 0x071100 <= LIBCURL_VERSION_NUM
-    if (option == CURLOPT_KEYPASSWD) { return easy_setopt_param_char_p; }
-#endif
 #if 0x073300 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_KEEP_SENDING_ON_ERROR) { return easy_setopt_param_long; }
+#endif
+#if 0x071100 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_KEYPASSWD) { return easy_setopt_param_char_p; }
 #endif
     if (option == CURLOPT_KRBLEVEL) { return easy_setopt_param_char_p; }
     if (option == CURLOPT_LOCALPORT) { return easy_setopt_param_long; }
@@ -1604,6 +1731,9 @@ namespace dromozoa {
     if (option == CURLOPT_MAXREDIRS) { return easy_setopt_param_long; }
     if (option == CURLOPT_MAX_RECV_SPEED_LARGE) { return easy_setopt_param_curl_off_t; }
     if (option == CURLOPT_MAX_SEND_SPEED_LARGE) { return easy_setopt_param_curl_off_t; }
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_MIMEPOST) { return easy_setopt_param_curl_mime_p; }
+#endif
     if (option == CURLOPT_NETRC) { return easy_setopt_param_long; }
     if (option == CURLOPT_NETRC_FILE) { return easy_setopt_param_char_p; }
     if (option == CURLOPT_NEW_DIRECTORY_PERMS) { return easy_setopt_param_long; }
@@ -1644,7 +1774,7 @@ namespace dromozoa {
 #if 0x071301 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_POSTREDIR) { return easy_setopt_param_long; }
 #endif
-    if (option == CURLOPT_PREQUOTE) { return easy_setopt_param_char_p; }
+    if (option == CURLOPT_PREQUOTE) { return easy_setopt_param_struct_curl_slist_p; }
 #if 0x073400 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_PRE_PROXY) { return easy_setopt_param_char_p; }
 #endif
@@ -1735,6 +1865,9 @@ namespace dromozoa {
     if (option == CURLOPT_REDIR_PROTOCOLS) { return easy_setopt_param_long; }
 #endif
     if (option == CURLOPT_REFERER) { return easy_setopt_param_char_p; }
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_REQUEST_TARGET) { return easy_setopt_param_char_p; }
+#endif
 #if 0x071503 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_RESOLVE) { return easy_setopt_param_struct_curl_slist_p; }
 #endif
@@ -1779,6 +1912,9 @@ namespace dromozoa {
     if (option == CURLOPT_SHARE) { return easy_setopt_param_CURLSH_p; }
     if (option == CURLOPT_SOCKOPTDATA) { return easy_setopt_param_void_p; }
     if (option == CURLOPT_SOCKOPTFUNCTION) { return easy_setopt_param_callback; }
+#if 0x073700 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_SOCKS5_AUTH) { return easy_setopt_param_long; }
+#endif
 #if 0x071304 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_SOCKS5_GSSAPI_NEC) { return easy_setopt_param_long; }
 #endif
@@ -1786,6 +1922,9 @@ namespace dromozoa {
     if (option == CURLOPT_SOCKS5_GSSAPI_SERVICE) { return easy_setopt_param_char_p; }
 #endif
     if (option == CURLOPT_SSH_AUTH_TYPES) { return easy_setopt_param_long; }
+#if 0x073800 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_SSH_COMPRESSION) { return easy_setopt_param_long; }
+#endif
 #if 0x071101 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_SSH_HOST_PUBLIC_KEY_MD5) { return easy_setopt_param_char_p; }
 #endif
@@ -1838,6 +1977,12 @@ namespace dromozoa {
 #if 0x072e00 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_STREAM_WEIGHT) { return easy_setopt_param_long; }
 #endif
+#if 0x073600 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_SUPPRESS_CONNECT_HEADERS) { return easy_setopt_param_long; }
+#endif
+#if 0x073100 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_TCP_FASTOPEN) { return easy_setopt_param_long; }
+#endif
 #if 0x071900 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_TCP_KEEPALIVE) { return easy_setopt_param_long; }
 #endif
@@ -1848,9 +1993,6 @@ namespace dromozoa {
     if (option == CURLOPT_TCP_KEEPINTVL) { return easy_setopt_param_long; }
 #endif
     if (option == CURLOPT_TCP_NODELAY) { return easy_setopt_param_long; }
-#if 0x073100 <= LIBCURL_VERSION_NUM
-    if (option == CURLOPT_TCP_FASTOPEN) { return easy_setopt_param_long; }
-#endif
     if (option == CURLOPT_TELNETOPTIONS) { return easy_setopt_param_struct_curl_slist_p; }
 #if 0x071304 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_TFTP_BLKSIZE) { return easy_setopt_param_long; }
@@ -1862,6 +2004,9 @@ namespace dromozoa {
     if (option == CURLOPT_TIMEOUT) { return easy_setopt_param_long; }
     if (option == CURLOPT_TIMEOUT_MS) { return easy_setopt_param_long; }
     if (option == CURLOPT_TIMEVALUE) { return easy_setopt_param_long; }
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_TIMEVALUE_LARGE) { return easy_setopt_param_curl_off_t; }
+#endif
 #if 0x071504 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_TLSAUTH_PASSWORD) { return easy_setopt_param_char_p; }
 #endif
@@ -1874,6 +2019,12 @@ namespace dromozoa {
     if (option == CURLOPT_TRANSFERTEXT) { return easy_setopt_param_long; }
 #if 0x071506 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_TRANSFER_ENCODING) { return easy_setopt_param_long; }
+#endif
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_RESOLVER_START_FUNCTION) { return easy_setopt_param_callback; }
+#endif
+#if 0x073b00 <= LIBCURL_VERSION_NUM
+    if (option == CURLOPT_RESOLVER_START_DATA) { return easy_setopt_param_void_p; }
 #endif
 #if 0x072800 <= LIBCURL_VERSION_NUM
     if (option == CURLOPT_UNIX_SOCKET_PATH) { return easy_setopt_param_char_p; }

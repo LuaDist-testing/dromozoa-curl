@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -25,7 +25,7 @@ namespace dromozoa {
       for (int i = 1; ; ++i) {
         luaX_get_field(L, index, i);
         if (const char* p = lua_tostring(L, -1)) {
-          append(p);
+          slist_ = curl_slist_append(slist_, p);
           lua_pop(L, 1);
         } else {
           lua_pop(L, 1);
@@ -49,15 +49,5 @@ namespace dromozoa {
     struct curl_slist* slist = slist_;
     slist_ = 0;
     return slist;
-  }
-
-  void string_list::append(const char* string) {
-    slist_ = curl_slist_append(slist_, string);
-  }
-
-  void string_list::swap(string_list& that) {
-    struct curl_slist* slist = slist_;
-    slist_ = that.slist_;
-    that.slist_ = slist;
   }
 }

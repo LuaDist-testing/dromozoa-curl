@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -23,19 +23,21 @@ namespace dromozoa {
     int socket_callback(CURL* easy, curl_socket_t s, int what, void* userdata, void*) {
       luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
-      int top = lua_gettop(L);
-      ref->get_field();
-      new_easy_ref(L, easy);
-      luaX_push(L, s);
-      luaX_push(L, what);
       int result = 0;
-      int r = lua_pcall(L, 3, 1, 0);
-      if (r == 0) {
-        if (luaX_is_integer(L, -1)) {
-          result = lua_tointeger(L, -1);
+      int top = lua_gettop(L);
+      {
+        ref->get_field(L);
+        new_easy_ref(L, easy);
+        luaX_push(L, s);
+        luaX_push(L, what);
+        int r = lua_pcall(L, 3, 1, 0);
+        if (r == 0) {
+          if (luaX_is_integer(L, -1)) {
+            result = lua_tointeger(L, -1);
+          }
+        } else {
+          DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
         }
-      } else {
-        DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
       }
       lua_settop(L, top);
       return result;
@@ -44,69 +46,83 @@ namespace dromozoa {
     int timer_callback(CURLM* multi, long timeout_ms, void* userdata) {
       luaX_reference<>* ref = static_cast<luaX_reference<>*>(userdata);
       lua_State* L = ref->state();
-      int top = lua_gettop(L);
-      ref->get_field();
-      new_multi_ref(L, multi);
-      luaX_push(L, timeout_ms);
       int result = 0;
-      int r = lua_pcall(L, 2, 1, 0);
-      if (r == 0) {
-        if (luaX_is_integer(L, -1)) {
-          result = lua_tointeger(L, -1);
+      int top = lua_gettop(L);
+      {
+        ref->get_field(L);
+        new_multi_ref(L, multi);
+        luaX_push(L, timeout_ms);
+        int r = lua_pcall(L, 2, 1, 0);
+        if (r == 0) {
+          if (luaX_is_integer(L, -1)) {
+            result = lua_tointeger(L, -1);
+          }
+        } else {
+          DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
         }
-      } else {
-        DROMOZOA_UNEXPECTED(lua_tostring(L, -1));
       }
       lua_settop(L, top);
       return result;
     }
+  }
 
+  class multi_handle_impl {
+  public:
     template <class T>
-    inline CURLMcode setopt_integer(lua_State* L, CURLMoption option) {
-      return curl_multi_setopt(check_multi(L, 1), option, luaX_check_integer<T>(L, 3));
+    static CURLMcode setopt_integer(multi_handle* self, lua_State* L, CURLMoption option) {
+      return curl_multi_setopt(self->get(), option, luaX_check_integer<T>(L, 3));
     }
 
     template <class T>
-    inline CURLMcode setopt_function(lua_State* L, CURLMoption option, CURLMoption option_data, const T& callback) {
-      multi_handle* self = check_multi_handle(L, 1);
-      CURLMcode result = CURLM_UNKNOWN_OPTION;
+    static CURLMcode setopt_function_ref(multi_handle* self, lua_State* L, CURLMoption option, CURLMoption option_data, const T& callback) {
       if (lua_isnoneornil(L, 3)) {
-        result = curl_multi_setopt(self->get(), option, 0);
+        CURLMcode result = curl_multi_setopt(self->get(), option, 0);
         if (result == CURLM_OK) {
           result = curl_multi_setopt(self->get(), option_data, 0);
+          if (result == CURLM_OK) {
+            self->delete_reference(option);
+          }
         }
+        return result;
       } else {
-        luaX_reference<>* ref = self->new_reference(option, L, 3);
-        result = curl_multi_setopt(self->get(), option, &callback);
+        CURLMcode result = curl_multi_setopt(self->get(), option, &callback);
         if (result == CURLM_OK) {
+          luaX_reference<>* ref = self->new_reference(option, L, 3);
           result = curl_multi_setopt(self->get(), option_data, ref);
         }
+        return result;
       }
-      return result;
     }
+  };
 
+  namespace {
     void impl_setopt(lua_State* L) {
+      multi_handle* self = check_multi_handle(L, 1);
       CURLMoption option = luaX_check_enum<CURLMoption>(L, 2);
       CURLMcode result = CURLM_UNKNOWN_OPTION;
+
       switch (multi_setopt_param(option)) {
         case multi_setopt_param_long:
-          result = setopt_integer<long>(L, option);
+          result = multi_handle_impl::setopt_integer<long>(self, L, option);
           break;
+
         case multi_setopt_param_callback:
           switch (option) {
             case CURLMOPT_SOCKETFUNCTION:
-              result = setopt_function(L, option, CURLMOPT_SOCKETDATA, socket_callback);
+              result = multi_handle_impl::setopt_function_ref(self, L, option, CURLMOPT_SOCKETDATA, socket_callback);
               break;
             case CURLMOPT_TIMERFUNCTION:
-              result = setopt_function(L, option, CURLMOPT_TIMERDATA, timer_callback);
+              result = multi_handle_impl::setopt_function_ref(self, L, option, CURLMOPT_TIMERDATA, timer_callback);
               break;
             default:
               result = CURLM_UNKNOWN_OPTION;
           }
           break;
+
         default:
           result = CURLM_UNKNOWN_OPTION;
       }
+
       if (result == CURLM_OK) {
         luaX_push_success(L);
       } else {

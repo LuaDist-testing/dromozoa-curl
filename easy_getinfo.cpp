@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -20,7 +20,7 @@
 namespace dromozoa {
   namespace {
     template <class T>
-    inline CURLcode getinfo(lua_State* L, CURLINFO info) {
+    CURLcode getinfo(lua_State* L, CURLINFO info) {
       T value = 0;
       CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &value);
       if (result == CURLE_OK) {
@@ -62,19 +62,43 @@ namespace dromozoa {
       return result;
     }
 
+#if CURL_AT_LEAST_VERSION(7,34,0)
+    CURLcode getinfo_tlssessioninfo(lua_State* L, CURLINFO info) {
+      struct curl_tlssessioninfo* session = 0;
+      CURLcode result = curl_easy_getinfo(check_easy(L, 1), info, &session);
+      if (result == CURLE_OK) {
+        lua_newtable(L);
+        luaX_set_field<lua_Integer>(L, -1, "backend", session->backend);
+        lua_pushlightuserdata(L, session->internals);
+        luaX_set_field(L, -2, "internals");
+      }
+      return result;
+    }
+#endif
+
     void impl_getinfo(lua_State* L) {
       CURLINFO info = luaX_check_enum<CURLINFO>(L, 2);
       CURLcode result = CURLE_UNKNOWN_OPTION;
+
       switch (info & CURLINFO_TYPEMASK) {
         case CURLINFO_STRING:
           result = getinfo<const char*>(L, info);
           break;
+
         case CURLINFO_LONG:
           result = getinfo<long>(L, info);
           break;
+
         case CURLINFO_DOUBLE:
           result = getinfo<double>(L, info);
           break;
+
+#if CURL_AT_LEAST_VERSION(7,55,0)
+        case CURLINFO_OFF_T:
+          result = getinfo<curl_off_t>(L, info);
+          break;
+#endif
+
         case CURLINFO_SLIST:
           switch (info) {
             case CURLINFO_CERTINFO:
@@ -85,21 +109,24 @@ namespace dromozoa {
 #if CURL_AT_LEAST_VERSION(7,48,0)
             case CURLINFO_TLS_SSL_PTR:
 #endif
-              result = CURLE_UNKNOWN_OPTION;
+              result = getinfo_tlssessioninfo(L, info);
               break;
 #endif
             default:
               result = getinfo_slist(L, info);
           }
           break;
+
 #if CURL_AT_LEAST_VERSION(7,45,0)
         case CURLINFO_SOCKET:
           result = getinfo<curl_socket_t>(L, info);
           break;
 #endif
+
         default:
           result = CURLE_UNKNOWN_OPTION;
       }
+
       if (result != CURLE_OK) {
         push_error(L, result);
       }

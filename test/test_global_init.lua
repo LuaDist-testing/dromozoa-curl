@@ -1,4 +1,4 @@
--- Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-curl.
 --
@@ -17,16 +17,9 @@
 
 local curl = require "dromozoa.curl"
 
+local verbose = os.getenv "VERBOSE" == "1"
+
 assert(curl.global_init())
-
-local easy = assert(curl.easy())
-assert(easy:setopt(curl.CURLOPT_URL, "https://dromozoa.s3.amazonaws.com/pub/index.html"))
-assert(easy:setopt(curl.CURLOPT_WRITEFUNCTION, function (data)
-  print(data)
-end))
-assert(easy:perform())
-assert(easy:setopt(curl.CURLOPT_WRITEFUNCTION))
-assert(easy:perform())
-
-assert(easy:cleanup())
-assert(curl.global_cleanup())
+if verbose then
+  io.stderr:write(curl.version(), "\n")
+end

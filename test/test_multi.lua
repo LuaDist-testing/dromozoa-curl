@@ -1,4 +1,4 @@
--- Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+-- Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 --
 -- This file is part of dromozoa-curl.
 --
@@ -15,31 +15,59 @@
 -- You should have received a copy of the GNU General Public License
 -- along with dromozoa-curl.  If not, see <http://www.gnu.org/licenses/>.
 
-local unix = require "dromozoa.unix"
 local curl = require "dromozoa.curl"
-local multimap = require "dromozoa.commons.multimap"
-local uint32 = require "dromozoa.commons.uint32"
+local dyld = require "dromozoa.dyld"
+local unix = require "dromozoa.unix"
 
-local selector = unix.selector()
-local selector_time = unix.clock_gettime(unix.CLOCK_MONOTONIC_RAW)
-local timers = multimap()
+local verbose = os.getenv "VERBOSE" == "1"
+
+assert(dyld.dlopen_pthread())
+assert(curl.global_init())
+
+local selector = assert(unix.selector())
+local selector_time = assert(unix.clock_gettime(unix.CLOCK_MONOTONIC_RAW))
+local timer = unix.timer()
 
 local multi = assert(curl.multi())
+local multi_timer
+local easy
 
-local easy1 = assert(curl.easy())
-assert(easy1:setopt(curl.CURLOPT_URL, "https://dromozoa.s3.amazonaws.com/pub/index.html"))
-assert(multi:add_handle(easy1))
+for i = 1, 10 do
+  easy = assert(curl.easy())
+  local j = 0
+  if verbose then
+    assert(easy:setopt(curl.CURLOPT_VERBOSE, 1))
+  end
+  assert(easy:setopt(curl.CURLOPT_IPRESOLVE, curl.CURL_IPRESOLVE_V4))
+  assert(easy:setopt(curl.CURLOPT_URL, "http://kotori.dromozoa.com/cgi-bin/nph-dromozoa-curl.cgi"))
+  assert(easy:setopt(curl.CURLOPT_WRITEFUNCTION, function (data)
+    j = j + 1
+    if verbose then
+      io.stderr:write(i, " ", j, " ", data)
+      io.stderr:flush()
+    end
+  end))
+  assert(multi:add_handle(easy))
+end
 
-local easy2 = assert(curl.easy())
-assert(easy2:setopt(curl.CURLOPT_URL, "https://dromozoa.s3.amazonaws.com/pub/dromozoa-s3-browser/1.2/dromozoa-s3-browser.js"))
-assert(multi:add_handle(easy2))
-
-assert(easy1:get_address() ~= easy2:get_address())
+if verbose then
+  io.stderr:write "collectgarbage1\n"
+  io.stderr:flush()
+end
+collectgarbage()
+if verbose then
+  io.stderr:write "collectgarbage2\n"
+  io.stderr:flush()
+end
+collectgarbage()
+if verbose then
+  io.stderr:write "collectgarbage3\n"
+  io.stderr:flush()
+end
 
 local socket_map = {}
 
-multi:setopt(curl.CURLMOPT_SOCKETFUNCTION, function (easy, s, what)
-  print("socket", easy, s, what)
+assert(multi:setopt(curl.CURLMOPT_SOCKETFUNCTION, function (easy, s, what)
   if what == curl.CURL_POLL_REMOVE then
     socket_map[s] = nil
     selector:del(s)
@@ -52,54 +80,46 @@ multi:setopt(curl.CURLMOPT_SOCKETFUNCTION, function (easy, s, what)
     elseif what == curl.CURL_POLL_INOUT then
       event = unix.SELECTOR_READ_WRITE
     end
-    if socket_map[s] == nil then
-      selector:add(s, event)
-    else
+    if socket_map[s] then
       selector:mod(s, event)
+    else
+      selector:add(s, event)
     end
     socket_map[s] = event
   end
-end)
+end))
 
-multi:setopt(curl.CURLMOPT_TIMERFUNCTION, function (multi, timeout_ms)
-  print("timer", multi, timeout_ms)
+assert(multi:setopt(curl.CURLMOPT_TIMERFUNCTION, function (multi, timeout_ms)
   if timeout_ms == 0 then
     local running_handles = assert(multi:socket_action(curl.CURL_SOCKET_TIMEOUT, 0))
-    print("1:running_handles", running_handles)
   elseif timeout_ms > 0 then
-    local tv = unix.clock_gettime(unix.CLOCK_MONOTONIC_RAW)
-    tv:add(timeout_ms * 0.001)
-    timers:insert(tv, function ()
-      local running_handles = assert(multi:socket_action(curl.CURL_SOCKET_TIMEOUT, 0))
-      print("2:running_handles", running_handles)
-    end)
+    multi_timer = unix.clock_gettime(unix.CLOCK_MONOTONIC_RAW) + unix.timespec(timeout_ms * 0.001)
+  else
+    multi_timer = nil
   end
-end)
+end))
+
+timer:start()
 
 local running_handles = assert(multi:socket_action(curl.CURL_SOCKET_TIMEOUT, 0))
-print("0:running_handles", running_handles)
 while true do
-  selector_time = unix.clock_gettime(unix.CLOCK_MONOTONIC_RAW)
-  local range = timers:upper_bound(selector_time)
-  for _, f in range:each() do
-    f()
-  end
-  for _, _, h in range:each() do
-    h:remove()
+  selector_time = assert(unix.clock_gettime(unix.CLOCK_MONOTONIC_RAW))
+  if multi_timer then
+    multi_timer = nil
+    local running_handles = assert(multi:socket_action(curl.CURL_SOCKET_TIMEOUT, 0))
   end
   local result = selector:select(0.1)
   local running_handles
   for i = 1, result do
     local fd, event = selector:event(i)
     local curl_events = 0
-    if uint32.band(event, unix.SELECTOR_READ) ~= 0 then
-      curl_events = uint32.bor(curl_events, curl.CURL_POLL_IN)
+    if unix.band(event, unix.SELECTOR_READ) ~= 0 then
+      curl_events = unix.bor(curl_events, curl.CURL_POLL_IN)
     end
-    if uint32.band(event, unix.SELECTOR_WRITE) ~= 0 then
-      curl_events = uint32.bor(curl_events, curl.CURL_POLL_OUT)
+    if unix.band(event, unix.SELECTOR_WRITE) ~= 0 then
+      curl_events = unix.bor(curl_events, curl.CURL_POLL_OUT)
     end
     running_handles = assert(multi:socket_action(fd, curl_events))
-    print("3:running_handles", running_handles)
     if running_handles == 0 then
       break
     end
@@ -111,19 +131,32 @@ end
 
 while true do
   local info, n = multi:info_read()
-  print(info, n)
-  if info == nil then
-    break
-  else
+  if info then
     assert(info.msg == curl.CURLMSG_DONE)
     assert(info.result == curl.CURLE_OK)
-    local address = info.easy_handle:get_address()
-    assert(address == easy1:get_address() or address == easy2:get_address())
+  else
+    break
+  end
+  if verbose then
+    io.stderr:write(n, "\n")
   end
 end
 
-assert(multi:remove_handle(easy1))
-assert(easy1:cleanup())
-assert(multi:remove_handle(easy2))
-assert(easy2:cleanup())
-assert(multi:cleanup())
+timer:stop()
+
+if verbose then
+  io.stderr:write(timer:elapsed(), "\n")
+end
+assert(timer:elapsed() < 5)
+
+local result, message = multi:add_handle(easy)
+if verbose then
+  io.stderr:write(message, "\n")
+end
+assert(not result)
+
+assert(multi:remove_handle(easy))
+easy = nil
+
+collectgarbage()
+collectgarbage()

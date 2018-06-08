@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -19,6 +19,10 @@
 
 namespace dromozoa {
   namespace {
+    CURLM* check_multi(lua_State* L, int arg) {
+      return check_multi_handle(L, arg)->get();
+    }
+
     void impl_gc(lua_State* L) {
       check_multi_handle(L, 1)->~multi_handle();
     }
@@ -42,7 +46,7 @@ namespace dromozoa {
     }
 
     void impl_add_handle(lua_State* L) {
-      CURLMcode result = curl_multi_add_handle(check_multi(L, 1), check_easy(L, 2));
+      CURLMcode result = check_multi_handle(L, 1)->add_handle(L, 2);
       if (result == CURLM_OK) {
         luaX_push_success(L);
       } else {
@@ -51,7 +55,7 @@ namespace dromozoa {
     }
 
     void impl_remove_handle(lua_State* L) {
-      CURLMcode result = curl_multi_remove_handle(check_multi(L, 1), check_easy(L, 2));
+      CURLMcode result = check_multi_handle(L, 1)->remove_handle(check_easy_handle(L, 2));
       if (result == CURLM_OK) {
         luaX_push_success(L);
       } else {
@@ -80,6 +84,9 @@ namespace dromozoa {
         luaX_set_field(L, -2, "easy_handle");
         if (msg->msg == CURLMSG_DONE) {
           luaX_set_field<lua_Integer>(L, -1, "result", msg->data.result);
+        } else {
+          lua_pushlightuserdata(L, msg->data.whatever);
+          luaX_set_field(L, -2, "whatever");
         }
         luaX_push(L, msgs_in_queue);
       } else {
@@ -94,10 +101,6 @@ namespace dromozoa {
 
   multi_handle* check_multi_handle(lua_State* L, int arg) {
     return luaX_check_udata<multi_handle>(L, arg, "dromozoa.curl.multi_ref", "dromozoa.curl.multi");
-  }
-
-  CURLM* check_multi(lua_State* L, int arg) {
-    return check_multi_handle(L, arg)->get();
   }
 
   void new_multi_ref(lua_State* L, CURLM* handle) {

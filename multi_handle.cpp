@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -27,16 +27,81 @@ namespace dromozoa {
   }
 
   CURLMcode multi_handle::cleanup() {
-    std::map<CURLMoption, luaX_binder*>::iterator i = references_.begin();
-    std::map<CURLMoption, luaX_binder*>::iterator end = references_.end();
-    for (; i != end; ++i) {
-      delete i->second;
+    {
+      std::map<CURLMoption, luaX_binder*>::iterator i = references_.begin();
+      std::map<CURLMoption, luaX_binder*>::iterator end = references_.end();
+      for (; i != end; ++i) {
+        delete i->second;
+      }
+      references_.clear();
     }
-    references_.clear();
+
+    {
+      std::map<easy_handle*, luaX_binder*>::iterator i = easy_handles_.begin();
+      std::map<easy_handle*, luaX_binder*>::iterator end = easy_handles_.end();
+      for (; i != end; ++i) {
+        easy_handle* that = i->first;
+        CURLMcode result = curl_multi_remove_handle(handle_, that->get());
+        if (result != CURLM_OK) {
+          DROMOZOA_UNEXPECTED(curl_multi_strerror(result));
+        }
+        that->multi_handle_ = 0;
+        delete i->second;
+      }
+      easy_handles_.clear();
+    }
 
     CURLM* handle = handle_;
     handle_ = 0;
     return curl_multi_cleanup(handle);
+  }
+
+  CURLMcode multi_handle::add_handle(lua_State* L, int index) {
+    easy_handle* that = check_easy_handle(L, index);
+    if (that->multi_handle_) {
+      return CURLM_ADDED_ALREADY;
+    }
+
+    std::map<easy_handle*, luaX_binder*>::iterator i = easy_handles_.find(that);
+    if (i != easy_handles_.end()) {
+      return CURLM_ADDED_ALREADY;
+    }
+
+    luaX_reference<>* reference = 0;
+    try {
+      reference = new luaX_reference<>(L, index);
+      easy_handles_.insert(std::make_pair(that, reference));
+    } catch (...) {
+      delete reference;
+      throw;
+    }
+
+    CURLMcode result = curl_multi_add_handle(handle_, that->get());
+    if (result == CURLM_OK) {
+      that->multi_handle_ = this;
+    }
+
+    return result;
+  }
+
+  CURLMcode multi_handle::remove_handle(easy_handle* that) {
+    if (!that->multi_handle_) {
+      return CURLM_OK;
+    }
+
+    std::map<easy_handle*, luaX_binder*>::iterator i = easy_handles_.find(that);
+    if (i == easy_handles_.end()) {
+      return CURLM_OK;
+    }
+
+    CURLMcode result = curl_multi_remove_handle(handle_, that->get());
+    if (result == CURLM_OK) {
+      that->multi_handle_ = 0;
+      delete i->second;
+      easy_handles_.erase(i);
+    }
+
+    return result;
   }
 
   CURLM* multi_handle::get() const {
@@ -58,6 +123,14 @@ namespace dromozoa {
     } catch (...) {
       delete reference;
       throw;
+    }
+  }
+
+  void multi_handle::delete_reference(CURLMoption option) {
+    std::map<CURLMoption, luaX_binder*>::iterator i = references_.find(option);
+    if (i != references_.end()) {
+      delete i->second;
+      references_.erase(i);
     }
   }
 }

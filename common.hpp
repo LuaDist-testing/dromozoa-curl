@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Tomoyuki Fujimori <moyu@dromozoa.com>
+// Copyright (C) 2017,2018 Tomoyuki Fujimori <moyu@dromozoa.com>
 //
 // This file is part of dromozoa-curl.
 //
@@ -39,18 +39,20 @@
 #define CURLE_UNKNOWN_OPTION CURLE_BAD_FUNCTION_ARGUMENT
 #endif
 
+#if !CURL_AT_LEAST_VERSION(7,32,1)
+#define CURLM_ADDED_ALREADY CURLM_BAD_EASY_HANDLE
+#endif
+
 #include <dromozoa/bind.hpp>
 
 namespace dromozoa {
   class string_list {
   public:
-    explicit string_list(struct curl_slist* slist = 0);
+    explicit string_list(struct curl_slist* slist);
     string_list(lua_State* L, int index);
     ~string_list();
     struct curl_slist* get() const;
     struct curl_slist* release();
-    void append(const char* string);
-    void swap(string_list& that);
   private:
     struct curl_slist* slist_;
     string_list(const string_list&);
@@ -64,20 +66,23 @@ namespace dromozoa {
     void free();
     CURLFORMcode add(lua_State* L);
     struct curl_httppost* get() const;
-    luaX_reference<>* new_reference(lua_State* L, int index);
-    void save_slist(struct curl_slist* slist);
-    bool have_stream() const;
+    int stream() const;
   private:
+    friend class httppost_handle_impl;
     struct curl_httppost* first_;
     struct curl_httppost* last_;
     std::set<luaX_binder*> references_;
     std::set<struct curl_slist*> slists_;
+    int stream_;
     httppost_handle(const httppost_handle&);
     httppost_handle& operator=(const httppost_handle&);
+    luaX_reference<>* new_reference(lua_State* L, int index);
+    void save_slist(struct curl_slist* slist);
   };
 
   httppost_handle* check_httppost_handle(lua_State* L, int arg);
-  struct curl_httppost* check_httppost(lua_State* L, int arg);
+
+  class multi_handle;
 
   class easy_handle {
   public:
@@ -86,15 +91,20 @@ namespace dromozoa {
     void reset();
     void cleanup();
     CURL* get() const;
-    luaX_reference<>* new_reference(CURLoption option, lua_State* L, int index);
-    void save_slist(CURLoption option, struct curl_slist* slist);
   private:
+    friend class easy_handle_impl;
+    friend class multi_handle;
     CURL* handle_;
+    multi_handle* multi_handle_;
     std::map<CURLoption, luaX_binder*> references_;
     std::map<CURLoption, struct curl_slist*> slists_;
     easy_handle(const easy_handle&);
     easy_handle& operator=(const easy_handle&);
     void clear();
+    luaX_reference<>* new_reference(CURLoption option, lua_State* L, int index);
+    void delete_reference(CURLoption option);
+    void save_slist(CURLoption option, struct curl_slist* slist);
+    void free_slist(CURLoption option);
   };
 
   easy_handle* check_easy_handle(lua_State* L, int arg);
@@ -106,17 +116,21 @@ namespace dromozoa {
     explicit multi_handle(CURLM* handle);
     ~multi_handle();
     CURLMcode cleanup();
+    CURLMcode add_handle(lua_State* L, int index);
+    CURLMcode remove_handle(easy_handle* that);
     CURLM* get() const;
-    luaX_reference<>* new_reference(CURLMoption option, lua_State* L, int index);
   private:
+    friend class multi_handle_impl;
     CURLM* handle_;
     std::map<CURLMoption, luaX_binder*> references_;
+    std::map<easy_handle*, luaX_binder*> easy_handles_;
     multi_handle(const multi_handle&);
     multi_handle& operator=(const multi_handle&);
+    luaX_reference<>* new_reference(CURLMoption option, lua_State* L, int index);
+    void delete_reference(CURLMoption option);
   };
 
   multi_handle* check_multi_handle(lua_State* L, int arg);
-  CURLM* check_multi(lua_State* L, int arg);
   void new_multi_ref(lua_State* L, CURLM* handle);
 
   void push_error(lua_State* L, CURLcode code);
